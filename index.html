@@ -326,14 +326,75 @@
             }
         }
 
-        function submitForm(e) {
+       async function submitForm(e) {
             e.preventDefault();
-            // เมื่อเชื่อม API จริง เอา URL มาใส่ส่วนนี้ได้เลย
-            alert('จำลองส่งข้อมูลสำเร็จ! (ข้อมูลชื่อ-เบอร์โทร และยอดเงินถูกส่งเรียบร้อย)');
-            document.getElementById('submissionForm').reset();
-            updateBranches();
-            updateTheme();
-            document.getElementById('uploadText').innerHTML = '<span class="font-semibold text-white">คลิกเพื่ออัปโหลด</span>';
+            
+            // ----------------------------------------------------
+            // [จุดที่ต้องเช็ก] นำ URL ที่ได้จาก Apps Script มาวางในบรรทัดนี้
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbwKnN-tuvcZDwuwl1Wf-Efl7kLLkf8cIhSa79GEeYvVmi3bz7ueh3uTLWko_px3ACKKcQ/exec'; 
+            // ----------------------------------------------------
+            
+            const btn = document.getElementById('submitBtn');
+            const originalText = btn.innerText;
+            btn.innerText = 'กำลังส่งข้อมูลและสลิป...';
+            btn.disabled = true;
+            btn.classList.add('opacity-75', 'cursor-not-allowed');
+
+            try {
+                // เตรียมไฟล์รูปภาพ
+                const fileInput = document.getElementById('slipUpload');
+                let fileData = null, fileName = null, mimeType = null;
+                
+                if (fileInput.files.length > 0) {
+                    const file = fileInput.files[0];
+                    fileName = file.name;
+                    mimeType = file.type;
+                    fileData = await new Promise((resolve) => {
+                        const reader = new FileReader();
+                        reader.onloadend = () => resolve(reader.result);
+                        reader.readAsDataURL(file);
+                    });
+                }
+
+                // รวบรวมข้อมูลทั้งหมด
+                const payload = {
+                    channel: document.querySelector('input[name="channel"]:checked').value === 'offline' ? 'Offline' : 'Online',
+                    province: document.getElementById('provinceSelect').value,
+                    branch: document.getElementById('branchSelect').value,
+                    empName: document.getElementById('empName').value,
+                    empPhone: document.getElementById('empPhone').value,
+                    qty: document.getElementById('qty').value,
+                    amount: document.getElementById('amount').value,
+                    fileData: fileData,
+                    fileName: fileName,
+                    mimeType: mimeType
+                };
+
+                // ส่งไปที่ Google Apps Script
+                const response = await fetch(scriptURL, {
+                    method: 'POST',
+                    body: JSON.stringify(payload)
+                });
+                
+                const result = await response.json();
+
+                if(result.status === 'success') {
+                    alert('บันทึกข้อมูลและอัปโหลดสลิปเรียบร้อยแล้ว!');
+                    document.getElementById('submissionForm').reset();
+                    updateBranches();
+                    updateTheme();
+                    document.getElementById('uploadText').innerHTML = '<span class="font-semibold text-white">คลิกเพื่ออัปโหลด</span>';
+                } else {
+                    alert('เกิดข้อผิดพลาด: ' + result.message);
+                }
+            } catch (error) {
+                alert('ไม่สามารถเชื่อมต่อระบบได้ กรุณาลองใหม่อีกครั้ง');
+                console.error(error);
+            }
+            
+            btn.innerText = originalText;
+            btn.disabled = false;
+            btn.classList.remove('opacity-75', 'cursor-not-allowed');
         }
 
         // 2. Modals Logic (เปิด/ปิดหน้าต่างกติกา)
