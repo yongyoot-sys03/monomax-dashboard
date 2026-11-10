@@ -148,7 +148,7 @@
             <!-- RIGHT: DASHBOARD SECTION -->
             <div id="dashboard" class="lg:col-span-8 flex flex-col space-y-6">
                 
-                <!-- OVERALL PROGRESS BAR (เชื่อมต่อข้อมูลอัตโนมัติจาก Sheet) -->
+                <!-- OVERALL PROGRESS BAR (โชว์ทั้งฉบับและเงิน) -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     
                     <!-- ความคืบหน้า OFFLINE -->
@@ -159,19 +159,49 @@
                                 <h3 class="text-lg font-bold text-white flex items-center">
                                     <span class="mr-2 text-red-500">🔴</span> เป้าหมาย OFFLINE
                                 </h3>
-                                <p class="text-slate-400 text-sm mt-1">ยอดจัดสรร: <span id="offTargetUI" class="font-mono text-white">กำลังโหลด...</span> บาท</p>
+                                <p class="text-slate-400 text-sm mt-1">ยอดจัดสรร: <span id="offTargetQtyUI" class="font-mono text-white">...</span> ฉบับ / <span id="offTargetAmtUI" class="font-mono text-white">...</span> บาท</p>
                             </div>
                             <div class="flex justify-between items-end mb-2 mt-3">
-                                <span id="offActualUI" class="text-red-400 text-sm font-mono font-medium">จำหน่ายได้: ...</span>
+                                <div class="flex flex-col">
+                                    <span class="text-slate-400 text-sm font-medium">จำหน่ายได้: <span id="offActualQtyUI" class="font-mono text-white font-bold">...</span> ฉบับ</span>
+                                    <span class="text-red-400 text-sm font-medium">เป็นเงิน: <span id="offActualAmtUI" class="font-mono text-white font-bold">...</span> ฿</span>
+                                </div>
                                 <span id="offPercentUI" class="text-2xl font-bold font-mono text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-pink-500">0%</span>
                             </div>
-                            <div class="w-full bg-slate-900 rounded-full h-3 border border-slate-700 overflow-hidden shadow-inner">
+                            <div class="w-full bg-slate-900 rounded-full h-3 border border-slate-700 overflow-hidden shadow-inner mt-2">
                                 <div id="offBarUI" class="bg-gradient-to-r from-red-600 to-red-400 h-3 rounded-full relative transition-all duration-1000" style="width: 0%">
                                     <div class="absolute inset-0 bg-white/20 animate-pulse"></div>
                                 </div>
                             </div>
                         </div>
                     </div>
+
+                    <!-- ความคืบหน้า ONLINE -->
+                    <div class="bg-gradient-to-br from-yellow-950/40 to-slate-800 rounded-xl p-5 border border-yellow-900/50 shadow-xl relative overflow-hidden">
+                        <div class="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 rounded-full bg-yellow-500/10 blur-2xl"></div>
+                        <div class="relative z-10">
+                            <div class="flex flex-col justify-between items-start mb-2 border-b border-yellow-900/30 pb-2">
+                                <h3 class="text-lg font-bold text-white flex items-center">
+                                    <span class="mr-2 text-yellow-500">🟡</span> เป้าหมาย ONLINE
+                                </h3>
+                                <p class="text-slate-400 text-sm mt-1">ยอดจัดสรร: <span id="onTargetQtyUI" class="font-mono text-white">...</span> ฉบับ / <span id="onTargetAmtUI" class="font-mono text-white">...</span> บาท</p>
+                            </div>
+                            <div class="flex justify-between items-end mb-2 mt-3">
+                                <div class="flex flex-col">
+                                    <span class="text-slate-400 text-sm font-medium">จำหน่ายได้: <span id="onActualQtyUI" class="font-mono text-white font-bold">...</span> ฉบับ</span>
+                                    <span class="text-yellow-400 text-sm font-medium">เป็นเงิน: <span id="onActualAmtUI" class="font-mono text-white font-bold">...</span> ฿</span>
+                                </div>
+                                <span id="onPercentUI" class="text-2xl font-bold font-mono text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-200">0%</span>
+                            </div>
+                            <div class="w-full bg-slate-900 rounded-full h-3 border border-slate-700 overflow-hidden shadow-inner mt-2">
+                                <div id="onBarUI" class="bg-gradient-to-r from-yellow-600 to-yellow-400 h-3 rounded-full relative transition-all duration-1000" style="width: 0%">
+                                    <div class="absolute inset-0 bg-white/20 animate-pulse"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
 
                     <!-- ความคืบหน้า ONLINE -->
                     <div class="bg-gradient-to-br from-yellow-950/40 to-slate-800 rounded-xl p-5 border border-yellow-900/50 shadow-xl relative overflow-hidden">
@@ -327,21 +357,27 @@
                 provSelect.disabled = false;
 
                 // --- อัปเดตกล่องเป้าหมายรวม OFFLINE / ONLINE ---
+                // --- อัปเดตกล่องเป้าหมายรวม OFFLINE / ONLINE ---
                 const prog = resultData.progress;
                 const formatNumber = (num) => Number(num).toLocaleString('th-TH', {minimumFractionDigits: 0, maximumFractionDigits: 2});
+                const formatInt = (num) => Number(num).toLocaleString('th-TH'); // สำหรับโชว์จำนวนฉบับแบบไม่มีทศนิยม
                 const calcPercent = (actual, target) => target > 0 ? ((actual / target) * 100).toFixed(2) : 0;
 
-                // อัปเดต UI ฝั่ง OFFLINE
-                const offPct = calcPercent(prog.offline.actual, prog.offline.target);
-                document.getElementById('offTargetUI').innerText = formatNumber(prog.offline.target);
-                document.getElementById('offActualUI').innerText = `จำหน่ายได้: ${formatNumber(prog.offline.actual)} ฿`;
+                // อัปเดต UI ฝั่ง OFFLINE (คำนวณ % จากยอดเงิน)
+                const offPct = calcPercent(prog.offline.actualAmt, prog.offline.targetAmt);
+                document.getElementById('offTargetQtyUI').innerText = formatInt(prog.offline.targetQty);
+                document.getElementById('offTargetAmtUI').innerText = formatNumber(prog.offline.targetAmt);
+                document.getElementById('offActualQtyUI').innerText = formatInt(prog.offline.actualQty);
+                document.getElementById('offActualAmtUI').innerText = formatNumber(prog.offline.actualAmt);
                 document.getElementById('offPercentUI').innerText = `${offPct}%`;
                 document.getElementById('offBarUI').style.width = `${Math.max(offPct, 0.5)}%`; 
 
-                // อัปเดต UI ฝั่ง ONLINE
-                const onPct = calcPercent(prog.online.actual, prog.online.target);
-                document.getElementById('onTargetUI').innerText = formatNumber(prog.online.target);
-                document.getElementById('onActualUI').innerText = `จำหน่ายได้: ${formatNumber(prog.online.actual)} ฿`;
+                // อัปเดต UI ฝั่ง ONLINE (คำนวณ % จากยอดเงิน)
+                const onPct = calcPercent(prog.online.actualAmt, prog.online.targetAmt);
+                document.getElementById('onTargetQtyUI').innerText = formatInt(prog.online.targetQty);
+                document.getElementById('onTargetAmtUI').innerText = formatNumber(prog.online.targetAmt);
+                document.getElementById('onActualQtyUI').innerText = formatInt(prog.online.actualQty);
+                document.getElementById('onActualAmtUI').innerText = formatNumber(prog.online.actualAmt);
                 document.getElementById('onPercentUI').innerText = `${onPct}%`;
                 document.getElementById('onBarUI').style.width = `${Math.max(onPct, 0.5)}%`;
 
