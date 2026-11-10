@@ -316,7 +316,7 @@
 
         // --- 2. โหลดข้อมูลเมื่อเปิดเว็บ ---
         document.addEventListener("DOMContentLoaded", async () => {
-            // 👇 วาง URL ใหม่ของคุณตรงนี้
+            // 👇 นำ URL ที่เพิ่งก๊อปมา วางทับข้อความภาษาไทยข้างล่างนี้ให้อยู่ในเครื่องหมาย ' '
             const scriptURL = 'https://script.google.com/macros/s/AKfycbwQN4nR7W9OeUcM6liWEIYpCpPGDpxXCZ30ealDHmKs3Dpa6Jx11_4LspnLDD57iuF2/exec'; 
             
             const provSelect = document.getElementById('provinceSelect');
@@ -425,7 +425,7 @@
 
         async function submitForm(e) {
             e.preventDefault();
-            // 👇 วาง URL ของคุณตรงนี้อีกจุดครับ
+            // 👇 นำ URL ที่เพิ่งก๊อปมา วางทับข้อความภาษาไทยข้างล่างนี้ให้อยู่ในเครื่องหมาย ' ' อีกจุด
             const scriptURL = 'https://script.google.com/macros/s/AKfycbwQN4nR7W9OeUcM6liWEIYpCpPGDpxXCZ30ealDHmKs3Dpa6Jx11_4LspnLDD57iuF2/exec'; 
             
             const btn = document.getElementById('submitBtn');
@@ -526,7 +526,6 @@
                         </div>
                     </div>
                 `;
-                // เรียกใช้ฟังก์ชันวาดกราฟ
                 setTimeout(renderChartsAndTable, 100);
             } else {
                 let provinceTotalAmt = 0;
@@ -612,7 +611,7 @@
             }
         }
 
-        // --- 5. ฟังก์ชันปิดหน้าต่างและเคลียร์กราฟ (สำคัญมาก) ---
+        // --- 5. ฟังก์ชันปิดหน้าต่างและเคลียร์กราฟ ---
         function closeDashModal() {
             document.getElementById('dashModal').classList.add('hidden');
             document.getElementById('dashModal').classList.remove('flex');
@@ -620,7 +619,7 @@
             if (onChart) { onChart.destroy(); onChart = null; }
         }
 
-        // --- 6. ฟังก์ชันวาดกราฟและสร้างตาราง "ภาพรวม ปข.3" ---
+        // --- 6. ฟังก์ชันวาดกราฟและตาราง "ภาพรวม ปข.3" ---
         function renderChartsAndTable() {
             const groups = ['นครราชสีมา', 'บุรีรัมย์', 'สุรินทร์', 'ชัยภูมิ', 'ร้อยเอ็ด', 'สนง.ปข.3', 'ศป.นครราชสีมา'];
             
@@ -632,10 +631,7 @@
                 const on = globalGroupData.online[grp] || { qty: 0, amt: 0 };
                 const rowTotalAmt = off.amt + on.amt;
                 totalAllAmt += rowTotalAmt;
-                
-                tableData.push({
-                    name: grp, offQty: off.qty, offAmt: off.amt, onQty: on.qty, onAmt: on.amt, totalAmt: rowTotalAmt
-                });
+                tableData.push({ name: grp, offQty: off.qty, offAmt: off.amt, onQty: on.qty, onAmt: on.amt, totalAmt: rowTotalAmt });
             });
 
             tableData.sort((a, b) => b.totalAmt - a.totalAmt);
@@ -656,7 +652,6 @@
                     </tr>
                 `;
             });
-            
             const tableBody = document.getElementById('groupTableBody');
             if (tableBody) { tableBody.innerHTML = tbodyHtml; }
 
@@ -667,8 +662,7 @@
                 plugins: {
                     legend: { position: 'bottom', labels: { color: '#cbd5e1', font: { family: 'Kanit', size: 18 }, padding: 20 } },
                     datalabels: {
-                        color: '#fff', 
-                        font: { family: 'Kanit', weight: 'bold', size: 16, lineHeight: 1.2 }, 
+                        color: '#fff', font: { family: 'Kanit', weight: 'bold', size: 16, lineHeight: 1.2 }, 
                         formatter: (value, ctx) => {
                             if(value === 0) return null; 
                             let sum = ctx.chart._metasets[ctx.datasetIndex].total;
@@ -684,25 +678,20 @@
             };
             
             const colors = ['#ef4444', '#f97316', '#eab308', '#22c55e', '#3b82f6', '#a855f7', '#ec4899'];
-            
             let offChartData = groups.map(grp => (globalGroupData.offline[grp] ? globalGroupData.offline[grp].amt : 0));
             let onChartData = groups.map(grp => (globalGroupData.online[grp] ? globalGroupData.online[grp].amt : 0));
 
             const ctxOff = document.getElementById('offCanvas');
             if (ctxOff) {
                 offChart = new Chart(ctxOff.getContext('2d'), {
-                    type: 'doughnut', 
-                    data: { labels: groups, datasets: [{ data: offChartData, backgroundColor: colors, borderWidth: 2, borderColor: '#1e293b' }] }, 
-                    options: commonOptions
+                    type: 'doughnut', data: { labels: groups, datasets: [{ data: offChartData, backgroundColor: colors, borderWidth: 2, borderColor: '#1e293b' }] }, options: commonOptions
                 });
             }
 
             const ctxOn = document.getElementById('onCanvas');
             if (ctxOn) {
                 onChart = new Chart(ctxOn.getContext('2d'), {
-                    type: 'doughnut', 
-                    data: { labels: groups, datasets: [{ data: onChartData, backgroundColor: colors, borderWidth: 2, borderColor: '#1e293b' }] }, 
-                    options: commonOptions
+                    type: 'doughnut', data: { labels: groups, datasets: [{ data: onChartData, backgroundColor: colors, borderWidth: 2, borderColor: '#1e293b' }] }, options: commonOptions
                 });
             }
         }
