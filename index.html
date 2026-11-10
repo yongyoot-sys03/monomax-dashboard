@@ -302,13 +302,13 @@
     <!-- Scripts -->
     <script>
         
-        // 1. สร้างตัวแปรว่างเปล่ารอรับข้อมูลจาก Sheet
+        // 1. สร้างตัวแปรว่างเปล่ารอรับข้อมูลจาก Sheet (มีแค่บรรทัดเดียว ไม่ซ้ำแล้ว)
         let branchData = {}; 
 
         // 2. ดึงข้อมูลทันทีเมื่อโหลดหน้าเว็บเสร็จ
         document.addEventListener("DOMContentLoaded", async () => {
-            // 🔴 ใส่ URL WEB APP ของคุณตรงนี้
-            const scriptURL = 'AKfycbwQN4nR7W9OeUcM6liWEIYpCpPGDpxXCZ30ealDHmKs3Dpa6Jx11_4LspnLDD57iuF2'; 
+            // 👇 ผมเติม https://.../exec ให้สมบูรณ์แล้วครับ
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbwQN4nR7W9OeUcM6liWEIYpCpPGDpxXCZ30ealDHmKs3Dpa6Jx11_4LspnLDD57iuF2/exec'; 
             
             const provSelect = document.getElementById('provinceSelect');
             provSelect.innerHTML = '<option value="" disabled selected>กำลังโหลดข้อมูล...</option>';
@@ -318,7 +318,7 @@
                 const response = await fetch(scriptURL, { method: 'GET', redirect: 'follow' });
                 const resultData = await response.json();
                 
-                // --- ส่วนที่ 1: อัปเดตรายชื่อสาขา ---
+                // --- อัปเดตรายชื่อสาขา ---
                 branchData = resultData.branches; 
                 provSelect.innerHTML = '<option value="" disabled selected>-- เลือกกลุ่มหน่วยงาน --</option>';
                 Object.keys(branchData).forEach(prov => {
@@ -326,7 +326,7 @@
                 });
                 provSelect.disabled = false;
 
-                // --- ส่วนที่ 2: อัปเดตกล่องเป้าหมายรวม OFFLINE / ONLINE ---
+                // --- อัปเดตกล่องเป้าหมายรวม OFFLINE / ONLINE ---
                 const prog = resultData.progress;
                 const formatNumber = (num) => Number(num).toLocaleString('th-TH', {minimumFractionDigits: 0, maximumFractionDigits: 2});
                 const calcPercent = (actual, target) => target > 0 ? ((actual / target) * 100).toFixed(2) : 0;
@@ -336,7 +336,7 @@
                 document.getElementById('offTargetUI').innerText = formatNumber(prog.offline.target);
                 document.getElementById('offActualUI').innerText = `จำหน่ายได้: ${formatNumber(prog.offline.actual)} ฿`;
                 document.getElementById('offPercentUI').innerText = `${offPct}%`;
-                document.getElementById('offBarUI').style.width = `${Math.max(offPct, 0.5)}%`; // ป้องกันแถบสีหายถ้าเป็น 0%
+                document.getElementById('offBarUI').style.width = `${Math.max(offPct, 0.5)}%`; 
 
                 // อัปเดต UI ฝั่ง ONLINE
                 const onPct = calcPercent(prog.online.actual, prog.online.target);
