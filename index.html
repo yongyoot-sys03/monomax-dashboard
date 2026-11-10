@@ -303,11 +303,12 @@
     </div>
 
     <!-- Scripts -->
+    <!-- Scripts -->
     <script>
         // --- 1. ตัวแปรส่วนกลาง ---
         let branchData = {}; 
         let globalGroupData = { offline: {}, online: {} };
-        let globalBranchData = {}; // <--- เพิ่มตัวแปรรับยอดรายสาขา
+        let globalBranchData = {};
         
         const formatNumber = (num) => Number(num).toLocaleString('th-TH', {minimumFractionDigits: 0, maximumFractionDigits: 2});
         const formatInt = (num) => Number(num).toLocaleString('th-TH');
@@ -315,7 +316,7 @@
 
         // --- 2. โหลดข้อมูลเมื่อเปิดเว็บ ---
         document.addEventListener("DOMContentLoaded", async () => {
-            // 👇 วาง URL ใหม่ของคุณตรงนี้ (1)
+            // 👇 วาง URL ใหม่ของคุณตรงนี้
             const scriptURL = 'https://script.google.com/macros/s/AKfycbwQN4nR7W9OeUcM6liWEIYpCpPGDpxXCZ30ealDHmKs3Dpa6Jx11_4LspnLDD57iuF2/exec'; 
             
             const provSelect = document.getElementById('provinceSelect');
@@ -326,11 +327,9 @@
                 const response = await fetch(scriptURL, { method: 'GET', redirect: 'follow' });
                 const resultData = await response.json();
                 
-                // เก็บข้อมูลสำหรับทำกราฟและตาราง
                 globalGroupData = resultData.groupTotals || { offline: {}, online: {} };
-                globalBranchData = resultData.branchTotals || {}; // <--- ดึงยอดสาขา
+                globalBranchData = resultData.branchTotals || {}; 
                 
-                // อัปเดต Dropdown
                 branchData = resultData.branches; 
                 provSelect.innerHTML = '<option value="" disabled selected>-- เลือกกลุ่มหน่วยงาน --</option>';
                 Object.keys(branchData).forEach(prov => {
@@ -338,7 +337,6 @@
                 });
                 provSelect.disabled = false;
 
-                // อัปเดตเป้าหมายหลัก
                 const prog = resultData.progress;
                 const offPct = calcPercent(prog.offline.actualAmt, prog.offline.targetAmt);
                 document.getElementById('offTargetQtyUI').innerText = formatInt(prog.offline.targetQty);
@@ -356,13 +354,11 @@
                 document.getElementById('onPercentUI').innerText = `${onPct}%`;
                 document.getElementById('onBarUI').style.width = `${Math.max(onPct, 0.5)}%`;
 
-                // อัปเดตกล่องยอดสุทธิ
                 document.getElementById('offTotalQtyUI').innerText = formatInt(prog.offline.actualQty);
                 document.getElementById('offTotalAmtUI').innerText = formatNumber(prog.offline.actualAmt);
                 document.getElementById('onTotalQtyUI').innerText = formatInt(prog.online.actualQty);
                 document.getElementById('onTotalAmtUI').innerText = formatNumber(prog.online.actualAmt);
 
-                // อัปเดต TOP 5
                 const top5 = resultData.top5;
                 const generateTop5HTML = (list, isOffline) => {
                     if (!list || list.length === 0) return '<li class="text-center text-slate-400 py-4">ยังไม่มีข้อมูลจำหน่าย</li>';
@@ -427,9 +423,9 @@
             }
         }
 
-       async function submitForm(e) {
+        async function submitForm(e) {
             e.preventDefault();
-            // 👇 วาง URL ใหม่ของคุณตรงนี้อีกจุดครับ (2)
+            // 👇 วาง URL ของคุณตรงนี้อีกจุดครับ
             const scriptURL = 'https://script.google.com/macros/s/AKfycbwQN4nR7W9OeUcM6liWEIYpCpPGDpxXCZ30ealDHmKs3Dpa6Jx11_4LspnLDD57iuF2/exec'; 
             
             const btn = document.getElementById('submitBtn');
@@ -530,11 +526,9 @@
                         </div>
                     </div>
                 `;
+                // เรียกใช้ฟังก์ชันวาดกราฟ
                 setTimeout(renderChartsAndTable, 100);
             } else {
-                // 👇 โค้ดสร้างการ์ดข้อมูลของแต่ละสาขา
-                
-                // คำนวณยอดรวมของ ปจ. นั้น
                 let provinceTotalAmt = 0;
                 let provOff = globalGroupData.offline[type] ? globalGroupData.offline[type].amt : 0;
                 let provOn = globalGroupData.online[type] ? globalGroupData.online[type].amt : 0;
@@ -554,7 +548,6 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 pb-6">
                 `;
                 
-                // ดึงรายชื่อสาขาที่อยู่ใน ปจ. นี้อย่างครอบคลุม
                 let branchSet = new Set();
                 if (branchData[type]) {
                     branchData[type].forEach(b => branchSet.add(b));
@@ -572,16 +565,13 @@
                     branchStats.push({ name: b, offQty: stats.offQty, offAmt: stats.offAmt, onQty: stats.onQty, onAmt: stats.onAmt, totalAmt: total });
                 });
                 
-                // จัดเรียงจากยอดขายมากไปน้อย
                 branchStats.sort((a, b) => b.totalAmt - a.totalAmt);
 
-                // วาดการ์ด
                 if (branchStats.length === 0) {
                      cardsHtml += `<div class="col-span-full text-center text-slate-400 py-10 text-lg">ยังไม่มีข้อมูลที่ทำการในสังกัดนี้</div>`;
                 } else {
                     branchStats.forEach(b => {
                         let pct = provinceTotalAmt > 0 ? ((b.totalAmt / provinceTotalAmt) * 100).toFixed(1) : 0;
-                        
                         cardsHtml += `
                             <div class="bg-slate-800 rounded-xl border border-slate-700 overflow-hidden flex flex-col shadow-lg hover:shadow-slate-600/50 transition-all duration-300 hover:-translate-y-1">
                                 <div class="bg-slate-700/80 text-white font-bold p-3 text-base text-center border-b border-slate-600 truncate" title="${b.name}">${b.name}</div>
@@ -622,14 +612,15 @@
             }
         }
 
+        // --- 5. ฟังก์ชันปิดหน้าต่างและเคลียร์กราฟ (สำคัญมาก) ---
         function closeDashModal() {
             document.getElementById('dashModal').classList.add('hidden');
             document.getElementById('dashModal').classList.remove('flex');
-            if(offChart) offChart.destroy();
-            if(onChart) onChart.destroy();
+            if (offChart) { offChart.destroy(); offChart = null; }
+            if (onChart) { onChart.destroy(); onChart = null; }
         }
 
-        // --- 5. ประมวลผลกราฟและตาราง (ดึงค่าจริง) ---
+        // --- 6. ฟังก์ชันวาดกราฟและสร้างตาราง "ภาพรวม ปข.3" ---
         function renderChartsAndTable() {
             const groups = ['นครราชสีมา', 'บุรีรัมย์', 'สุรินทร์', 'ชัยภูมิ', 'ร้อยเอ็ด', 'สนง.ปข.3', 'ศป.นครราชสีมา'];
             
@@ -665,7 +656,9 @@
                     </tr>
                 `;
             });
-            document.getElementById('groupTableBody').innerHTML = tbodyHtml;
+            
+            const tableBody = document.getElementById('groupTableBody');
+            if (tableBody) { tableBody.innerHTML = tbodyHtml; }
 
             Chart.register(ChartDataLabels);
             const commonOptions = {
@@ -695,19 +688,23 @@
             let offChartData = groups.map(grp => (globalGroupData.offline[grp] ? globalGroupData.offline[grp].amt : 0));
             let onChartData = groups.map(grp => (globalGroupData.online[grp] ? globalGroupData.online[grp].amt : 0));
 
-            const ctxOff = document.getElementById('offCanvas').getContext('2d');
-            offChart = new Chart(ctxOff, {
-                type: 'doughnut', 
-                data: { labels: groups, datasets: [{ data: offChartData, backgroundColor: colors, borderWidth: 2, borderColor: '#1e293b' }] }, 
-                options: commonOptions
-            });
+            const ctxOff = document.getElementById('offCanvas');
+            if (ctxOff) {
+                offChart = new Chart(ctxOff.getContext('2d'), {
+                    type: 'doughnut', 
+                    data: { labels: groups, datasets: [{ data: offChartData, backgroundColor: colors, borderWidth: 2, borderColor: '#1e293b' }] }, 
+                    options: commonOptions
+                });
+            }
 
-            const ctxOn = document.getElementById('onCanvas').getContext('2d');
-            onChart = new Chart(ctxOn, {
-                type: 'doughnut', 
-                data: { labels: groups, datasets: [{ data: onChartData, backgroundColor: colors, borderWidth: 2, borderColor: '#1e293b' }] }, 
-                options: commonOptions
-            });
+            const ctxOn = document.getElementById('onCanvas');
+            if (ctxOn) {
+                onChart = new Chart(ctxOn.getContext('2d'), {
+                    type: 'doughnut', 
+                    data: { labels: groups, datasets: [{ data: onChartData, backgroundColor: colors, borderWidth: 2, borderColor: '#1e293b' }] }, 
+                    options: commonOptions
+                });
+            }
         }
     </script>
 </body>
