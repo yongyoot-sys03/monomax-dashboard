@@ -280,16 +280,33 @@
 
     <!-- Scripts -->
     <script>
-        // 1. Form Logic
-        const branchData = {
-            "สนง.ปข.3": ["30099 สนง.ปข.3"],
-            "ศป.นครราชสีมา": ["30010 ศป.นม."],
-            "นครราชสีมา": ["30000 นครราชสีมา", "30110 พิมาย", "30130 ปากช่อง", "30140 สีคิ้ว"],
-            "บุรีรัมย์": ["31000 บุรีรัมย์", "31110 นางรอง", "31130 ลำปลายมาศ"],
-            "สุรินทร์": ["32000 สุรินทร์", "32120 ท่าตูม", "32140 ปราสาท"],
-            "ชัยภูมิ": ["36000 ชัยภูมิ", "36110 ภูเขียว", "36130 จัตุรัส"],
-            "ร้อยเอ็ด": ["45000 ร้อยเอ็ด", "45110 โพนทอง", "45120 เสลภูมิ"]
-        };
+        
+        // 1. สร้างตัวแปรว่างเปล่ารอรับข้อมูลจาก Sheet
+        let branchData = {}; 
+
+        // 2. ดึงข้อมูลทันทีเมื่อโหลดหน้าเว็บเสร็จ
+        document.addEventListener("DOMContentLoaded", async () => {
+            // 🔴 นำ URL เว็บแอป ของคุณมาใส่ตรงนี้ 
+            const scriptURL = 'ใส่_URL_WEB_APP_ของคุณที่นี่'; 
+            
+            const provSelect = document.getElementById('provinceSelect');
+            provSelect.innerHTML = '<option value="" disabled selected>กำลังโหลดข้อมูล...</option>';
+            provSelect.disabled = true;
+
+            try {
+                const response = await fetch(scriptURL);
+                branchData = await response.json();
+                
+                provSelect.innerHTML = '<option value="" disabled selected>-- เลือกกลุ่มหน่วยงาน --</option>';
+                Object.keys(branchData).forEach(prov => {
+                    provSelect.add(new Option(prov, prov));
+                });
+                provSelect.disabled = false;
+                
+            } catch (error) {
+                provSelect.innerHTML = '<option value="" disabled selected>โหลดข้อมูลล้มเหลว</option>';
+            }
+        });
 
         function updateBranches() {
             const pv = document.getElementById('provinceSelect').value;
