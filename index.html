@@ -291,7 +291,7 @@
     <!-- DASHBOARD MODAL -->
     <div id="dashModal" class="fixed inset-0 z-50 hidden items-center justify-center p-2 sm:p-4">
         <div class="absolute inset-0 bg-slate-950/90 backdrop-blur-md" onclick="closeDashModal()"></div>
-        <div class="relative bg-slate-900 border border-slate-700 rounded-xl w-full max-w-6xl h-[90vh] flex flex-col shadow-2xl z-10">
+        <div class="relative bg-slate-900 border border-slate-700 rounded-xl w-[98vw] max-w-[1600px] h-[95vh] flex flex-col shadow-2xl z-10">
             <div class="flex justify-between items-center p-4 border-b border-slate-800 bg-slate-800/50 rounded-t-xl">
                 <h3 id="modalTitle" class="text-2xl font-bold text-white">รายละเอียด</h3>
                 <button onclick="closeDashModal()" class="text-slate-400 hover:text-white hover:bg-slate-700 rounded-full p-2 transition-colors">
@@ -303,14 +303,18 @@
     </div>
 
     <!-- Scripts -->
+    <!-- Scripts -->
     <script>
-        
-        // 1. สร้างตัวแปรว่างเปล่ารอรับข้อมูลจาก Sheet (มีแค่บรรทัดเดียว ไม่ซ้ำแล้ว)
+        // --- 1. ตัวแปรส่วนกลาง ---
         let branchData = {}; 
+        let globalGroupData = { offline: {}, online: {} };
+        const formatNumber = (num) => Number(num).toLocaleString('th-TH', {minimumFractionDigits: 0, maximumFractionDigits: 2});
+        const formatInt = (num) => Number(num).toLocaleString('th-TH');
+        const calcPercent = (actual, target) => target > 0 ? ((actual / target) * 100).toFixed(2) : 0;
 
-        // 2. ดึงข้อมูลทันทีเมื่อโหลดหน้าเว็บเสร็จ
+        // --- 2. โหลดข้อมูลเมื่อเปิดเว็บ ---
         document.addEventListener("DOMContentLoaded", async () => {
-            // 👇 ผมเติม https://.../exec ให้สมบูรณ์แล้วครับ
+            // 👇 วาง URL ของคุณตรงนี้ (ต้องมี ' ' ครอบ)
             const scriptURL = 'https://script.google.com/macros/s/AKfycbwQN4nR7W9OeUcM6liWEIYpCpPGDpxXCZ30ealDHmKs3Dpa6Jx11_4LspnLDD57iuF2/exec'; 
             
             const provSelect = document.getElementById('provinceSelect');
@@ -321,7 +325,10 @@
                 const response = await fetch(scriptURL, { method: 'GET', redirect: 'follow' });
                 const resultData = await response.json();
                 
-                // --- อัปเดตรายชื่อสาขา ---
+                // เก็บข้อมูลสำหรับทำกราฟและตาราง
+                globalGroupData = resultData.groupTotals || { offline: {}, online: {} };
+                
+                // อัปเดต Dropdown
                 branchData = resultData.branches; 
                 provSelect.innerHTML = '<option value="" disabled selected>-- เลือกกลุ่มหน่วยงาน --</option>';
                 Object.keys(branchData).forEach(prov => {
@@ -329,14 +336,9 @@
                 });
                 provSelect.disabled = false;
 
-                // --- อัปเดตกล่องเป้าหมายรวม OFFLINE / ONLINE ---
-                // --- อัปเดตกล่องเป้าหมายรวม OFFLINE / ONLINE ---
+                // อัปเดตเป้าหมายหลัก
                 const prog = resultData.progress;
-                const formatNumber = (num) => Number(num).toLocaleString('th-TH', {minimumFractionDigits: 0, maximumFractionDigits: 2});
-                const formatInt = (num) => Number(num).toLocaleString('th-TH'); // สำหรับโชว์จำนวนฉบับแบบไม่มีทศนิยม
-                const calcPercent = (actual, target) => target > 0 ? ((actual / target) * 100).toFixed(2) : 0;
-
-                // อัปเดต UI ฝั่ง OFFLINE (คำนวณ % จากยอดเงิน)
+                
                 const offPct = calcPercent(prog.offline.actualAmt, prog.offline.targetAmt);
                 document.getElementById('offTargetQtyUI').innerText = formatInt(prog.offline.targetQty);
                 document.getElementById('offTargetAmtUI').innerText = formatNumber(prog.offline.targetAmt);
@@ -345,7 +347,6 @@
                 document.getElementById('offPercentUI').innerText = `${offPct}%`;
                 document.getElementById('offBarUI').style.width = `${Math.max(offPct, 0.5)}%`; 
 
-                // อัปเดต UI ฝั่ง ONLINE (คำนวณ % จากยอดเงิน)
                 const onPct = calcPercent(prog.online.actualAmt, prog.online.targetAmt);
                 document.getElementById('onTargetQtyUI').innerText = formatInt(prog.online.targetQty);
                 document.getElementById('onTargetAmtUI').innerText = formatNumber(prog.online.targetAmt);
@@ -353,25 +354,22 @@
                 document.getElementById('onActualAmtUI').innerText = formatNumber(prog.online.actualAmt);
                 document.getElementById('onPercentUI').innerText = `${onPct}%`;
                 document.getElementById('onBarUI').style.width = `${Math.max(onPct, 0.5)}%`;
-                // อัปเดตข้อมูลใส่กล่อง "ภาพรวมยอดจำหน่าย" ด้านล่าง
+
+                // อัปเดตกล่องยอดสุทธิ
                 document.getElementById('offTotalQtyUI').innerText = formatInt(prog.offline.actualQty);
                 document.getElementById('offTotalAmtUI').innerText = formatNumber(prog.offline.actualAmt);
                 document.getElementById('onTotalQtyUI').innerText = formatInt(prog.online.actualQty);
                 document.getElementById('onTotalAmtUI').innerText = formatNumber(prog.online.actualAmt);
-                // --- อัปเดตตารางจัดอันดับ TOP 5 ---
+
+                // อัปเดต TOP 5
                 const top5 = resultData.top5;
-                
-                // ฟังก์ชันวาดตารางแบบไดนามิก
                 const generateTop5HTML = (list, isOffline) => {
                     if (!list || list.length === 0) return '<li class="text-center text-slate-400 py-4">ยังไม่มีข้อมูลจำหน่าย</li>';
-                    
                     let html = '';
                     list.forEach((item, index) => {
-                        // อันดับ 1 ให้ไฮไลต์สีพื้นหลังและตัวหนา
                         const bgClass = index === 0 ? (isOffline ? 'bg-red-950/40 border-red-900/30' : 'bg-yellow-950/40 border-yellow-900/30') : 'border-transparent';
                         const textClass = index === 0 ? 'text-white font-semibold' : 'text-slate-300';
                         const valClass = isOffline ? 'text-red-400' : 'text-yellow-400';
-                        
                         html += `
                         <li class="flex justify-between items-center p-2 rounded border ${bgClass}">
                             <span class="${textClass} truncate pr-2">${index + 1}. ${item.name}</span>
@@ -383,10 +381,9 @@
                     });
                     return html;
                 };
-
-                // ส่งโครงสร้าง HTML ยัดเข้าไปใน UI
                 document.getElementById('top5OfflineUI').innerHTML = generateTop5HTML(top5.offline, true);
                 document.getElementById('top5OnlineUI').innerHTML = generateTop5HTML(top5.online, false);
+
             } catch (error) {
                 provSelect.innerHTML = '<option value="" disabled selected>โหลดข้อมูลล้มเหลว</option>';
                 document.getElementById('offTargetQtyUI').innerText = '-';
@@ -394,6 +391,7 @@
             }
         });
 
+        // --- 3. ระบบฟอร์ม ---
         function updateBranches() {
             const pv = document.getElementById('provinceSelect').value;
             const br = document.getElementById('branchSelect');
@@ -410,7 +408,6 @@
             const glow = document.getElementById('formGlow');
             const btn = document.getElementById('submitBtn');
             const uploadBox = document.getElementById('uploadBox');
-            
             if (isOnline) {
                 glow.className = "absolute -inset-1 bg-gradient-to-r from-yellow-500 to-yellow-800 rounded-2xl blur-md opacity-30 transition duration-500";
                 btn.className = "w-full text-slate-900 bg-yellow-500 hover:bg-yellow-600 font-bold rounded-lg text-lg px-5 py-3 mt-2 transition-all shadow-lg shadow-yellow-900/50";
@@ -431,8 +428,7 @@
 
        async function submitForm(e) {
             e.preventDefault();
-            
-            // 👇 วาง URL ที่ก๊อปปี้มาจาก Google Apps Script ลงในบรรทัดนี้ (ต้องมี ' ' ครอบหัวท้าย)
+            // 👇 วาง URL ของคุณตรงนี้อีกจุดครับ
             const scriptURL = 'https://script.google.com/macros/s/AKfycbwQN4nR7W9OeUcM6liWEIYpCpPGDpxXCZ30ealDHmKs3Dpa6Jx11_4LspnLDD57iuF2/exec'; 
             
             const btn = document.getElementById('submitBtn');
@@ -442,10 +438,8 @@
             btn.classList.add('opacity-75', 'cursor-not-allowed');
 
             try {
-                // เตรียมไฟล์รูปภาพ
                 const fileInput = document.getElementById('slipUpload');
                 let fileData = null, fileName = null, mimeType = null;
-                
                 if (fileInput.files.length > 0) {
                     const file = fileInput.files[0];
                     fileName = file.name;
@@ -456,8 +450,6 @@
                         reader.readAsDataURL(file);
                     });
                 }
-
-                // รวบรวมข้อมูล
                 const payload = {
                     channel: document.querySelector('input[name="channel"]:checked').value === 'offline' ? 'Offline' : 'Online',
                     province: document.getElementById('provinceSelect').value,
@@ -466,54 +458,28 @@
                     empPhone: document.getElementById('empPhone').value,
                     qty: document.getElementById('qty').value,
                     amount: document.getElementById('amount').value,
-                    fileData: fileData,
-                    fileName: fileName,
-                    mimeType: mimeType
+                    fileData: fileData, fileName: fileName, mimeType: mimeType
                 };
 
-                // ส่งไปที่ Google Apps Script
-                const response = await fetch(scriptURL, {
-                    method: 'POST',
-                    redirect: 'follow', // ป้องกัน Error การเปลี่ยนเส้นทาง
-                    headers: {
-                        'Content-Type': 'text/plain;charset=utf-8', // เลี่ยงการบล็อก CORS
-                    },
-                    body: JSON.stringify(payload)
-                });
-                
+                const response = await fetch(scriptURL, { method: 'POST', redirect: 'follow', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) });
                 const result = await response.json();
 
                 if(result.status === 'success') {
                     alert('บันทึกข้อมูลและอัปโหลดสลิปเรียบร้อยแล้ว!');
                     document.getElementById('submissionForm').reset();
-                    updateBranches();
-                    updateTheme();
+                    updateBranches(); updateTheme();
                     document.getElementById('uploadText').innerHTML = '<span class="font-semibold text-white">คลิกเพื่ออัปโหลด</span>';
-                } else {
-                    alert('เกิดข้อผิดพลาด: ' + result.message);
-                }
+                } else { alert('เกิดข้อผิดพลาด: ' + result.message); }
             } catch (error) {
                 alert('ไม่สามารถเชื่อมต่อระบบได้ กรุณาลองใหม่อีกครั้ง');
-                console.error(error);
             }
-            
-            btn.innerText = originalText;
-            btn.disabled = false;
-            btn.classList.remove('opacity-75', 'cursor-not-allowed');
+            btn.innerText = originalText; btn.disabled = false; btn.classList.remove('opacity-75', 'cursor-not-allowed');
         }
 
-        // 2. Modals Logic (เปิด/ปิดหน้าต่างกติกา)
-        function openRulesModal() {
-            document.getElementById('rulesModal').classList.remove('hidden');
-            document.getElementById('rulesModal').classList.add('flex');
-        }
+        // --- 4. ระบบแจ้งเตือน และ Dashboard Modal ---
+        function openRulesModal() { document.getElementById('rulesModal').classList.remove('hidden'); document.getElementById('rulesModal').classList.add('flex'); }
+        function closeRulesModal() { document.getElementById('rulesModal').classList.add('hidden'); document.getElementById('rulesModal').classList.remove('flex'); }
 
-        function closeRulesModal() {
-            document.getElementById('rulesModal').classList.add('hidden');
-            document.getElementById('rulesModal').classList.remove('flex');
-        }
-
-        // 3. Dashboard Modal Logic
         let offChart, onChart;
 
         function openDashModal(type) {
@@ -528,8 +494,13 @@
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-6">
                         <div class="bg-slate-800 p-5 rounded-xl border border-red-900/50 flex flex-col items-center shadow-lg relative overflow-hidden">
                             <div class="absolute top-0 w-full h-1 bg-gradient-to-r from-red-500 to-red-800"></div>
-                            <h4 class="text-xl font-bold text-white mb-2"><span class="text-red-500">OFFLINE</span> สัดส่วน 7 หน่วยงาน</h4>
-                            <div class="w-full max-w-[350px] aspect-square relative"><canvas id="offCanvas"></canvas></div>
+                            <!-- ปลดล็อกขนาด ให้ความสูงยืดหยุ่นตามหน้าจอ -->
+                            <div class="w-full h-[350px] md:h-[450px] lg:h-[550px] relative"><canvas id="offCanvas"></canvas></div>
+                        </div>
+                        <div class="bg-slate-800 p-5 rounded-xl border border-yellow-900/50 flex flex-col items-center shadow-lg relative overflow-hidden">
+                            <div class="absolute top-0 w-full h-1 bg-gradient-to-r from-yellow-400 to-yellow-600"></div>
+                            <h4 class="text-2xl font-bold text-white mb-4"><span class="text-yellow-500">ONLINE</span> สัดส่วน 7 หน่วยงาน</h4>
+                            <div class="w-full h-[350px] md:h-[450px] lg:h-[550px] relative"><canvas id="onCanvas"></canvas></div>
                         </div>
                         <div class="bg-slate-800 p-5 rounded-xl border border-yellow-900/50 flex flex-col items-center shadow-lg relative overflow-hidden">
                             <div class="absolute top-0 w-full h-1 bg-gradient-to-r from-yellow-400 to-yellow-600"></div>
@@ -537,37 +508,43 @@
                             <div class="w-full max-w-[350px] aspect-square relative"><canvas id="onCanvas"></canvas></div>
                         </div>
                     </div>
-                `;
-                setTimeout(renderCharts, 100);
-            } else {
-                const branches = branchData[type] || [type + " (สำนักงาน)"];
-                let cardsHtml = `
-                    <div class="mb-4 bg-slate-800 p-4 rounded-lg border border-slate-700 flex justify-between items-center">
-                        <span class="text-slate-300">ภาพรวมจังหวัด ${type}: </span>
-                        <div class="w-2/3 bg-slate-900 rounded-full h-3 overflow-hidden border border-slate-700">
-                            <div class="bg-blue-500 h-3 rounded-full" style="width: 65%"></div>
+                    
+                    <!-- เพิ่มตารางรายละเอียดทั้ง 7 หน่วยงาน -->
+                    <div class="bg-slate-800 rounded-xl border border-slate-700 overflow-hidden shadow-lg mt-6">
+                        <div class="bg-slate-700/50 p-4 border-b border-slate-600">
+                            <h4 class="text-lg font-bold text-white">📑 รายละเอียดจำหน่ายรายหน่วยงาน (เรียงตามยอดรวมสุทธิ)</h4>
                         </div>
-                        <span class="text-blue-400 font-bold font-mono ml-3">65%</span>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm text-left text-slate-300 font-mono">
+                                <thead class="text-xs text-slate-400 bg-slate-900/50 border-b border-slate-700 whitespace-nowrap">
+                                    <tr>
+                                        <th class="px-4 py-3 text-center w-16">อันดับ</th>
+                                        <th class="px-4 py-3">กลุ่มหน่วยงาน</th>
+                                        <th class="px-4 py-3 text-right text-red-400">OFFLINE (ฉบับ)</th>
+                                        <th class="px-4 py-3 text-right text-red-400">OFFLINE (บาท)</th>
+                                        <th class="px-4 py-3 text-right text-yellow-400">ONLINE (ฉบับ)</th>
+                                        <th class="px-4 py-3 text-right text-yellow-400">ONLINE (บาท)</th>
+                                        <th class="px-4 py-3 text-right text-white">ยอดรวมสุทธิ (บาท)</th>
+                                        <th class="px-4 py-3 text-right text-blue-400">สัดส่วน (%)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="groupTableBody">
+                                    <tr><td colspan="8" class="text-center py-4">กำลังโหลดข้อมูล...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">`;
-                
+                `;
+                setTimeout(renderChartsAndTable, 100);
+            } else {
+                // (ตารางของแต่ละจังหวัด ยังคงรูปแบบเดิมไว้)
+                const branches = branchData[type] || [type + " (สำนักงาน)"];
+                let cardsHtml = `<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">`;
                 branches.forEach(b => {
                     cardsHtml += `
-                        <div class="bg-slate-800 rounded-xl border border-slate-700 overflow-hidden flex flex-col shadow-lg hover:shadow-slate-700/50 transition-all duration-300 hover:-translate-y-1">
+                        <div class="bg-slate-800 rounded-xl border border-slate-700 overflow-hidden flex flex-col shadow-lg">
                             <div class="bg-slate-700/50 text-white font-bold p-3 text-sm text-center border-b border-slate-600">${b}</div>
-                            <div class="flex flex-1 font-mono text-sm">
-                                <div class="w-1/2 bg-red-950/20 p-3 border-r border-slate-700 flex flex-col justify-between">
-                                    <span class="text-red-400 font-semibold mb-2 text-xs border-b border-red-900/30 pb-1">OFFLINE</span>
-                                    <div class="text-slate-400 text-xs">ฉบับ: <span class="text-white text-sm">150</span></div>
-                                    <div class="text-slate-400 text-xs">เงิน: <span class="text-white text-sm">15,000</span></div>
-                                </div>
-                                <div class="w-1/2 bg-yellow-950/20 p-3 flex flex-col justify-between">
-                                    <span class="text-yellow-500 font-semibold mb-2 text-xs border-b border-yellow-900/30 pb-1">ONLINE</span>
-                                    <div class="text-slate-400 text-xs">ฉบับ: <span class="text-white text-sm">45</span></div>
-                                    <div class="text-slate-400 text-xs">เงิน: <span class="text-white text-sm">4,500</span></div>
-                                </div>
-                            </div>
-                            <div class="w-full bg-slate-900 h-1.5"><div class="bg-gradient-to-r from-slate-600 to-slate-400 h-1.5" style="width: 40%"></div></div>
+                            <div class="p-4 text-center text-slate-400 text-sm font-mono">อยู่ระหว่างพัฒนาระบบดึงรายสาขา</div>
                         </div>
                     `;
                 });
@@ -583,34 +560,94 @@
             if(onChart) onChart.destroy();
         }
 
-        function renderCharts() {
+        // --- 5. ประมวลผลกราฟและตาราง (ดึงค่าจริง) ---
+        function renderChartsAndTable() {
+            const groups = ['นครราชสีมา', 'บุรีรัมย์', 'สุรินทร์', 'ชัยภูมิ', 'ร้อยเอ็ด', 'สนง.ปข.3', 'ศป.นครราชสีมา'];
+            
+            // เตรียมข้อมูลคำนวณตาราง
+            let tableData = [];
+            let totalAllAmt = 0;
+
+            groups.forEach(grp => {
+                const off = globalGroupData.offline[grp] || { qty: 0, amt: 0 };
+                const on = globalGroupData.online[grp] || { qty: 0, amt: 0 };
+                const rowTotalAmt = off.amt + on.amt;
+                totalAllAmt += rowTotalAmt;
+                
+                tableData.push({
+                    name: grp, offQty: off.qty, offAmt: off.amt, onQty: on.qty, onAmt: on.amt, totalAmt: rowTotalAmt
+                });
+            });
+
+            // เรียงลำดับตารางจากมากไปน้อย
+            tableData.sort((a, b) => b.totalAmt - a.totalAmt);
+
+            // วาดตาราง
+            let tbodyHtml = '';
+            tableData.forEach((row, idx) => {
+                let pct = totalAllAmt > 0 ? ((row.totalAmt / totalAllAmt) * 100).toFixed(1) : 0;
+                tbodyHtml += `
+                    <tr class="border-b border-slate-700/50 hover:bg-slate-700/30 transition-colors">
+                        <td class="px-4 py-3 text-center font-bold text-white">${idx + 1}</td>
+                        <td class="px-4 py-3 font-semibold text-white">${row.name}</td>
+                        <td class="px-4 py-3 text-right text-slate-300">${formatInt(row.offQty)}</td>
+                        <td class="px-4 py-3 text-right text-red-400 font-medium">${formatNumber(row.offAmt)}</td>
+                        <td class="px-4 py-3 text-right text-slate-300">${formatInt(row.onQty)}</td>
+                        <td class="px-4 py-3 text-right text-yellow-400 font-medium">${formatNumber(row.onAmt)}</td>
+                        <td class="px-4 py-3 text-right text-white font-bold bg-slate-900/30">${formatNumber(row.totalAmt)}</td>
+                        <td class="px-4 py-3 text-right text-blue-400 font-bold">${pct}%</td>
+                    </tr>
+                `;
+            });
+            document.getElementById('groupTableBody').innerHTML = tbodyHtml;
+
+            // ตั้งค่ากราฟและขนาดตัวอักษร
             Chart.register(ChartDataLabels);
             const commonOptions = {
                 responsive: true, maintainAspectRatio: false,
+                layout: { padding: 20 }, // เพิ่มระยะขอบไม่ให้ตัวหนังสือโดนตัด
                 plugins: {
-                    legend: { position: 'bottom', labels: { color: '#cbd5e1', font: { family: 'Kanit' }, padding: 15 } },
+                    legend: { 
+                        position: 'bottom', 
+                        labels: { color: '#cbd5e1', font: { family: 'Kanit', size: 15 }, padding: 25 } // ขยายตัวอักษรด้านล่างกราฟ
+                    },
                     datalabels: {
-                        color: '#fff', font: { family: 'Kanit', weight: 'bold', size: 11 },
+                        color: '#fff', 
+                        font: { family: 'Kanit', weight: 'bold', size: 14 }, // ขยายตัวเลขในกราฟ
                         formatter: (value, ctx) => {
+                            if(value === 0) return null; 
                             let sum = ctx.chart._metasets[ctx.datasetIndex].total;
                             let percentage = ((value * 100) / sum).toFixed(1) + "%";
-                            return value.toLocaleString() + "\n(" + percentage + ")";
+                            
+                            let groupName = ctx.chart.data.labels[ctx.dataIndex];
+                            let type = ctx.chart.canvas.id === 'offCanvas' ? 'offline' : 'online';
+                            let qty = globalGroupData[type][groupName] ? globalGroupData[type][groupName].qty : 0;
+                            
+                            return formatInt(qty) + " ฉบับ\n" + formatNumber(value) + " ฿\n(" + percentage + ")";
                         },
                         textAlign: 'center'
                     }
                 }
             };
-            const labels = ['นครราชสีมา', 'บุรีรัมย์', 'สุรินทร์', 'ชัยภูมิ', 'ร้อยเอ็ด', 'สนง.ปข.3', 'ศป.นครราชสีมา'];
+            
             const colors = ['#ef4444', '#f97316', '#eab308', '#22c55e', '#3b82f6', '#a855f7', '#ec4899'];
+            
+            // ข้อมูลเรียงตาม array ของ groups เสมอสำหรับกราฟ
+            let offChartData = groups.map(grp => (globalGroupData.offline[grp] ? globalGroupData.offline[grp].amt : 0));
+            let onChartData = groups.map(grp => (globalGroupData.online[grp] ? globalGroupData.online[grp].amt : 0));
 
             const ctxOff = document.getElementById('offCanvas').getContext('2d');
             offChart = new Chart(ctxOff, {
-                type: 'doughnut', data: { labels: labels, datasets: [{ data: [1500, 800, 600, 400, 300, 200, 100], backgroundColor: colors, borderWidth: 2, borderColor: '#1e293b' }] }, options: commonOptions
+                type: 'doughnut', 
+                data: { labels: groups, datasets: [{ data: offChartData, backgroundColor: colors, borderWidth: 2, borderColor: '#1e293b' }] }, 
+                options: commonOptions
             });
 
             const ctxOn = document.getElementById('onCanvas').getContext('2d');
             onChart = new Chart(ctxOn, {
-                type: 'doughnut', data: { labels: labels, datasets: [{ data: [500, 300, 200, 150, 100, 50, 20], backgroundColor: colors, borderWidth: 2, borderColor: '#1e293b' }] }, options: commonOptions
+                type: 'doughnut', 
+                data: { labels: groups, datasets: [{ data: onChartData, backgroundColor: colors, borderWidth: 2, borderColor: '#1e293b' }] }, 
+                options: commonOptions
             });
         }
     </script>
