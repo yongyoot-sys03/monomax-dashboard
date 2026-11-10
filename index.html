@@ -532,8 +532,7 @@
                 `;
                 setTimeout(renderChartsAndTable, 100);
             } else {
-                // 👇 โค้ดสร้างการ์ดข้อมูลของแต่ละสาขาใน ปจ. 
-                const branches = branchData[type] || [];
+                // 👇 โค้ดสร้างการ์ดข้อมูลของแต่ละสาขา
                 
                 // คำนวณยอดรวมของ ปจ. นั้น
                 let provinceTotalAmt = 0;
@@ -555,20 +554,30 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 pb-6">
                 `;
                 
-                // เตรียมข้อมูลสาขา และกรองเอาเฉพาะสาขาที่มียอดขายหรืออยู่ในระบบ
+                // ดึงรายชื่อสาขาที่อยู่ใน ปจ. นี้อย่างครอบคลุม
+                let branchSet = new Set();
+                if (branchData[type]) {
+                    branchData[type].forEach(b => branchSet.add(b));
+                }
+                Object.keys(globalBranchData).forEach(b => {
+                    if (globalBranchData[b].group === type) branchSet.add(b);
+                });
+                
+                let branches = Array.from(branchSet);
                 let branchStats = [];
+
                 branches.forEach(b => {
                     let stats = globalBranchData[b] || { offQty: 0, offAmt: 0, onQty: 0, onAmt: 0 };
                     let total = stats.offAmt + stats.onAmt;
                     branchStats.push({ name: b, offQty: stats.offQty, offAmt: stats.offAmt, onQty: stats.onQty, onAmt: stats.onAmt, totalAmt: total });
                 });
                 
-                // จัดเรียงจากมากไปน้อย
+                // จัดเรียงจากยอดขายมากไปน้อย
                 branchStats.sort((a, b) => b.totalAmt - a.totalAmt);
 
-                // สร้างการ์ดทีละใบ
+                // วาดการ์ด
                 if (branchStats.length === 0) {
-                     cardsHtml += `<div class="col-span-full text-center text-slate-400 py-10 text-lg">ไม่มีข้อมูลที่ทำการในสังกัดนี้</div>`;
+                     cardsHtml += `<div class="col-span-full text-center text-slate-400 py-10 text-lg">ยังไม่มีข้อมูลที่ทำการในสังกัดนี้</div>`;
                 } else {
                     branchStats.forEach(b => {
                         let pct = provinceTotalAmt > 0 ? ((b.totalAmt / provinceTotalAmt) * 100).toFixed(1) : 0;
