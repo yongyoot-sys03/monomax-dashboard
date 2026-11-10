@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MONOMAX x Prompt Post - ลุ้นรับโชค ปข.3</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=Roboto+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+    <style>
+        body { font-family: 'Kanit', sans-serif; background-color: #0f172a; color: #f8fafc; }
+        .font-mono { font-family: 'Roboto Mono', monospace; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #1e293b; }
+        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+    </style>
+</head>
+<body class="min-h-screen overflow-x-hidden">
+
+    <!-- Header Navigation -->
+    <header id="top" class="sticky top-0 z-40 bg-slate-900/90 backdrop-blur-md border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <img src="https://i.postimg.cc/xTqVXYdw/images.png" alt="MONOMAX" class="h-8 object-contain rounded">
+                <div class="h-6 w-px bg-slate-700"></div>
+                <img src="https://i.postimg.cc/wT3Y1Hvp/prompt-post-logo.png" alt="Prompt Post" class="h-8 object-contain">
+                <div class="h-6 w-px bg-slate-700 hidden sm:block"></div>
+                <img src="https://i.postimg.cc/bNMcbMDX/502755108-1028038562796793-2906813054295735204-n.jpg" alt="Campaign Banner" class="h-10 w-24 object-cover rounded hidden sm:block">
+            </div>
+            <nav class="flex space-x-6 text-sm font-medium">
+                <a href="#top" class="text-slate-300 hover:text-white transition-colors">หน้าแรก</a>
+                <button onclick="openRulesModal()" class="text-slate-300 hover:text-red-400 transition-colors">กติการ่วมสนุก</button>
+                <a href="#dashboard" class="text-slate-300 hover:text-yellow-400 transition-colors">Dashboard</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 py-8">
+        <!-- Title -->
+        <div class="text-center mb-10">
+            <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-3 text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-yellow-400 to-red-500">
+                MONOMAX x Prompt Post
+            </h1>
+            <h2 class="text-xl md:text-2xl font-medium text-slate-300">แคมเปญเกาะกระแสกิจกรรมลุ้นรับโชค ปข.3</h2>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- LEFT: FORM SECTION -->
+            <div class="lg:col-span-5 relative">
+                <div id="formGlow" class="absolute -inset-1 bg-gradient-to-r from-red-600 to-red-900 rounded-2xl blur opacity-25 transition duration-500"></div>
+                <div class="relative bg-slate-800 rounded-xl p-6 border border-slate-700 shadow-2xl">
+                    <h3 class="text-2xl font-bold text-white mb-6 flex items-center">
+                        <span class="text-red-500 mr-2">📝</span> ส่งสลิปลุ้นรับโชค
+                    </h3>
+                    
+                    <form id="submissionForm" onsubmit="submitForm(event)" class="space-y-5">
+                        <div class="space-y-2">
+                            <label class="block text-base font-medium text-slate-300">ช่องทางการจำหน่าย</label>
+                            <div class="grid grid-cols-2 gap-4">
+                                <label class="relative cursor-pointer">
+                                    <input type="radio" name="channel" value="offline" class="peer sr-only" checked onchange="updateTheme()">
+                                    <div class="p-3 text-center rounded-lg border-2 border-slate-600 peer-checked:border-red-500 peer-checked:bg-red-950/30 text-slate-400 peer-checked:text-red-400 font-bold transition-all">OFFLINE</div>
+                                </label>
+                                <label class="relative cursor-pointer">
+                                    <input type="radio" name="channel" value="online" class="peer sr-only" onchange="updateTheme()">
+                                    <div class="p-3 text-center rounded-lg border-2 border-slate-600 peer-checked:border-yellow-500 peer-checked:bg-yellow-950/30 text-slate-400 peer-checked:text-yellow-400 font-bold transition-all">ONLINE</div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="block text-base font-medium text-slate-300">กลุ่มหน่วยงาน (ปจ.)</label>
+                            <select id="provinceSelect" required onchange="updateBranches()" class="w-full bg-slate-900 border border-slate-600 text-white text-lg rounded-lg focus:ring-red-500 block p-3">
+                                <option value="" disabled selected>-- เลือกกลุ่มหน่วยงาน --</option>
+                                <option value="นครราชสีมา">นครราชสีมา</option>
+                                <option value="บุรีรัมย์">บุรีรัมย์</option>
+                                <option value="สุรินทร์">สุรินทร์</option>
+                                <option value="ชัยภูมิ">ชัยภูมิ</option>
+                                <option value="ร้อยเอ็ด">ร้อยเอ็ด</option>
+                                <option value="สนง.ปข.3">สนง.ปข.3</option>
+                                <option value="ศป.นครราชสีมา">ศป.นครราชสีมา</option>
+                            </select>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="block text-base font-medium text-slate-300">รายชื่อที่ทำการ</label>
+                            <select id="branchSelect" required disabled class="w-full bg-slate-900 border border-slate-600 text-slate-400 text-lg rounded-lg focus:ring-red-500 block p-3 disabled:opacity-50">
+                                <option value="" disabled selected>-- กรุณาเลือกกลุ่ม ปจ. ก่อน --</option>
+                            </select>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="space-y-2">
+                                <label class="block text-base text-slate-300">จำนวน (ฉบับ)</label>
+                                <input type="number" id="qty" min="1" required class="w-full bg-slate-900 border border-slate-600 text-white p-3 font-mono rounded-lg focus:ring-red-500" placeholder="0">
+                            </div>
+                            <div class="space-y-2">
+                                <label class="block text-base text-slate-300">ยอดเงิน (บาท)</label>
+                                <input type="number" id="amount" min="1" required class="w-full bg-slate-900 border border-slate-600 text-white p-3 font-mono rounded-lg focus:ring-red-500" placeholder="0">
+                            </div>
+                        </div>
+
+                        <button type="submit" id="submitBtn" class="w-full text-white bg-red-600 hover:bg-red-700 font-bold rounded-lg text-lg px-5 py-4 transition-all shadow-lg shadow-red-900/50">
+                            บันทึกข้อมูล
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- RIGHT: DASHBOARD (TOP 5 + 8 BUTTONS) -->
+            <div id="dashboard" class="lg:col-span-7 flex flex-col space-y-6">
+                
+                <!-- 8 Dashboard Buttons -->
+                <div class="bg-slate-800 rounded-xl p-5 border border-slate-700">
+                    <h3 class="text-xl font-bold text-white mb-4">📊 วิเคราะห์ยอดจำหน่ายรายหน่วยงาน (คลิกเพื่อดูรายละเอียด)</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        <button onclick="openDashModal('ภาพรวม ปข.3')" class="bg-gradient-to-r from-slate-700 to-slate-600 hover:from-red-600 hover:to-yellow-600 text-white font-bold py-3 rounded-lg border border-slate-500 transition-all shadow-lg">ภาพรวม ปข.3</button>
+                        <button onclick="openDashModal('นครราชสีมา')" class="bg-slate-700 hover:bg-slate-600 text-white font-medium py-3 rounded-lg border border-slate-600 transition-all">นครราชสีมา</button>
+                        <button onclick="openDashModal('บุรีรัมย์')" class="bg-slate-700 hover:bg-slate-600 text-white font-medium py-3 rounded-lg border border-slate-600 transition-all">บุรีรัมย์</button>
+                        <button onclick="openDashModal('สุรินทร์')" class="bg-slate-700 hover:bg-slate-600 text-white font-medium py-3 rounded-lg border border-slate-600 transition-all">สุรินทร์</button>
+                        <button onclick="openDashModal('ชัยภูมิ')" class="bg-slate-700 hover:bg-slate-600 text-white font-medium py-3 rounded-lg border border-slate-600 transition-all">ชัยภูมิ</button>
+                        <button onclick="openDashModal('ร้อยเอ็ด')" class="bg-slate-700 hover:bg-slate-600 text-white font-medium py-3 rounded-lg border border-slate-600 transition-all">ร้อยเอ็ด</button>
+                        <button onclick="openDashModal('สนง.ปข.3')" class="bg-slate-700 hover:bg-slate-600 text-white font-medium py-3 rounded-lg border border-slate-600 transition-all">สนง.ปข.3</button>
+                        <button onclick="openDashModal('ศป.นครราชสีมา')" class="bg-slate-700 hover:bg-slate-600 text-white font-medium py-3 rounded-lg border border-slate-600 transition-all">ศป.นครราชสีมา</button>
+                    </div>
+                </div>
+
+                <!-- TOP 5 Ranking (Offline Left / Online Right) -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- TOP 5 OFFLINE -->
+                    <div class="bg-red-950/20 border border-red-900/50 rounded-xl p-5">
+                        <h4 class="text-lg font-bold text-red-400 mb-4 flex justify-between border-b border-red-900/50 pb-2">
+                            <span>🏆 TOP 5 OFFLINE</span>
+                            <span class="text-sm font-normal text-slate-400">(ยอดเงิน)</span>
+                        </h4>
+                        <ul class="space-y-3 font-mono text-sm">
+                            <li class="flex justify-between items-center"><span class="text-white">1. 30000 นครราชสีมา</span> <span class="text-red-300">150,000 ฿</span></li>
+                            <li class="flex justify-between items-center"><span class="text-slate-300">2. 31000 บุรีรัมย์</span> <span class="text-red-300">85,000 ฿</span></li>
+                            <li class="flex justify-between items-center"><span class="text-slate-300">3. 32000 สุรินทร์</span> <span class="text-red-300">62,000 ฿</span></li>
+                            <li class="flex justify-between items-center"><span class="text-slate-300">4. 36000 ชัยภูมิ</span> <span class="text-red-300">45,000 ฿</span></li>
+                            <li class="flex justify-between items-center"><span class="text-slate-300">5. 45000 ร้อยเอ็ด</span> <span class="text-red-300">38,000 ฿</span></li>
+                        </ul>
+                    </div>
+
+                    <!-- TOP 5 ONLINE -->
+                    <div class="bg-yellow-950/20 border border-yellow-900/50 rounded-xl p-5">
+                        <h4 class="text-lg font-bold text-yellow-400 mb-4 flex justify-between border-b border-yellow-900/50 pb-2">
+                            <span>🏆 TOP 5 ONLINE</span>
+                            <span class="text-sm font-normal text-slate-400">(ยอดเงิน)</span>
+                        </h4>
+                        <ul class="space-y-3 font-mono text-sm">
+                            <li class="flex justify-between items-center"><span class="text-white">1. 30130 ปากช่อง</span> <span class="text-yellow-300">95,000 ฿</span></li>
+                            <li class="flex justify-between items-center"><span class="text-slate-300">2. 30000 นครราชสีมา</span> <span class="text-yellow-300">55,000 ฿</span></li>
+                            <li class="flex justify-between items-center"><span class="text-slate-300">3. 31110 นางรอง</span> <span class="text-yellow-300">42,000 ฿</span></li>
+                            <li class="flex justify-between items-center"><span class="text-slate-300">4. 45110 โพนทอง</span> <span class="text-yellow-300">30,000 ฿</span></li>
+                            <li class="flex justify-between items-center"><span class="text-slate-300">5. 32140 ปราสาท</span> <span class="text-yellow-300">25,000 ฿</span></li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- DASHBOARD MODAL (Pop-up for Charts & Cards) -->
+    <div id="dashModal" class="fixed inset-0 z-50 hidden items-center justify-center p-2 sm:p-4">
+        <div class="absolute inset-0 bg-black/85 backdrop-blur-sm" onclick="closeDashModal()"></div>
+        <div class="relative bg-slate-900 border border-slate-700 rounded-xl w-full max-w-[95vw] h-[90vh] flex flex-col shadow-2xl">
+            
+            <!-- Modal Header -->
+            <div class="flex justify-between items-center p-4 border-b border-slate-800 bg-slate-900/90 rounded-t-xl z-10">
+                <h3 id="modalTitle" class="text-2xl font-bold text-white">รายละเอียด</h3>
+                <button onclick="closeDashModal()" class="text-slate-400 hover:text-white bg-slate-800 rounded-full p-2">
+                    ❌ ปิดหน้าต่าง
+                </button>
+            </div>
+
+            <!-- Modal Body (Scrollable) -->
+            <div class="p-4 overflow-y-auto flex-1" id="modalContent">
+                <!-- Content will be injected via JS (Charts or Cards) -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // 1. Form Logic
+        const branchData = {
+            "สนง.ปข.3": ["30099 สนง.ปข.3"],
+            "ศป.นครราชสีมา": ["30010 ศป.นม."],
+            "นครราชสีมา": ["30000 นครราชสีมา", "30110 พิมาย", "30130 ปากช่อง", "30140 สีคิ้ว"],
+            "บุรีรัมย์": ["31000 บุรีรัมย์", "31110 นางรอง", "31130 ลำปลายมาศ"],
+            "สุรินทร์": ["32000 สุรินทร์", "32120 ท่าตูม", "32140 ปราสาท"],
+            "ชัยภูมิ": ["36000 ชัยภูมิ", "36110 ภูเขียว", "36130 จัตุรัส"],
+            "ร้อยเอ็ด": ["45000 ร้อยเอ็ด", "45110 โพนทอง", "45120 เสลภูมิ"]
+        };
+
+        function updateBranches() {
+            const pv = document.getElementById('provinceSelect').value;
+            const br = document.getElementById('branchSelect');
+            br.innerHTML = '<option value="" disabled selected>-- เลือกที่ทำการ --</option>';
+            if (pv && branchData[pv]) {
+                br.disabled = false;
+                br.classList.replace('text-slate-400', 'text-white');
+                branchData[pv].forEach(b => br.add(new Option(b, b)));
+            }
+        }
+
+        function updateTheme() {
+            const isOnline = document.querySelector('input[name="channel"]:checked').value === 'online';
+            const glow = document.getElementById('formGlow');
+            const btn = document.getElementById('submitBtn');
+            if (isOnline) {
+                glow.className = "absolute -inset-1 bg-gradient-to-r from-yellow-500 to-yellow-800 rounded-2xl blur opacity-25 transition duration-500";
+                btn.className = "w-full text-slate-900 bg-yellow-500 hover:bg-yellow-600 font-bold rounded-lg text-lg px-5 py-4 transition-all shadow-lg shadow-yellow-900/50";
+            } else {
+                glow.className = "absolute -inset-1 bg-gradient-to-r from-red-600 to-red-900 rounded-2xl blur opacity-25 transition duration-500";
+                btn.className = "w-full text-white bg-red-600 hover:bg-red-700 font-bold rounded-lg text-lg px-5 py-4 transition-all shadow-lg shadow-red-900/50";
+            }
+        }
+
+        function submitForm(e) {
+            e.preventDefault();
+            alert('จำลองส่งข้อมูลสำเร็จ! (รอต่อ API จริง)');
+            document.getElementById('submissionForm').reset();
+            updateBranches();
+            updateTheme();
+        }
+
+        // 2. Dashboard Modal Logic
+        let offChart, onChart;
+
+        function openDashModal(type) {
+            document.getElementById('dashModal').classList.remove('hidden');
+            document.getElementById('dashModal').classList.add('flex');
+            document.getElementById('modalTitle').innerText = type;
+            const content = document.getElementById('modalContent');
+            content.innerHTML = ''; 
+
+            if(type === 'ภาพรวม ปข.3') {
+                // Render Charts (No Drill-down)
+                content.innerHTML = `
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                        <div class="bg-red-950/20 p-4 rounded-xl border border-red-900/50 flex flex-col items-center">
+                            <h4 class="text-xl font-bold text-red-500 mb-2">OFFLINE สัดส่วน 7 หน่วยงาน</h4>
+                            <div class="w-full max-w-[400px] aspect-square relative"><canvas id="offCanvas"></canvas></div>
+                        </div>
+                        <div class="bg-yellow-950/20 p-4 rounded-xl border border-yellow-900/50 flex flex-col items-center">
+                            <h4 class="text-xl font-bold text-yellow-500 mb-2">ONLINE สัดส่วน 7 หน่วยงาน</h4>
+                            <div class="w-full max-w-[400px] aspect-square relative"><canvas id="onCanvas"></canvas></div>
+                        </div>
+                    </div>
+                `;
+                setTimeout(renderCharts, 100);
+            } else {
+                // Render Compact Grid Cards for Specific Unit
+                const branches = branchData[type] || [type + " (สำนักงาน)"];
+                let cardsHtml = `<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3">`;
+                
+                branches.forEach(b => {
+                    cardsHtml += `
+                        <div class="bg-slate-800 rounded-lg border border-slate-600 overflow-hidden flex flex-col">
+                            <div class="bg-slate-700 text-white font-bold p-2 text-sm text-center">${b}</div>
+                            <div class="flex flex-1 font-mono text-xs">
+                                <div class="w-1/2 bg-red-950/30 p-2 border-r border-slate-700 flex flex-col justify-between">
+                                    <span class="text-red-400 font-semibold mb-1">OFFLINE</span>
+                                    <div class="text-slate-300">ฉบับ: <span class="text-white">150</span></div>
+                                    <div class="text-slate-300">เงิน: <span class="text-white">15,000</span></div>
+                                    <div class="text-red-400 text-right mt-1">20%</div>
+                                </div>
+                                <div class="w-1/2 bg-yellow-950/30 p-2 flex flex-col justify-between">
+                                    <span class="text-yellow-500 font-semibold mb-1">ONLINE</span>
+                                    <div class="text-slate-300">ฉบับ: <span class="text-white">45</span></div>
+                                    <div class="text-slate-300">เงิน: <span class="text-white">4,500</span></div>
+                                    <div class="text-yellow-400 text-right mt-1">5%</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                cardsHtml += `</div>`;
+                content.innerHTML = cardsHtml;
+            }
+        }
+
+        function closeDashModal() {
+            document.getElementById('dashModal').classList.add('hidden');
+            document.getElementById('dashModal').classList.remove('flex');
+            if(offChart) offChart.destroy();
+            if(onChart) onChart.destroy();
+        }
+
+        function renderCharts() {
+            Chart.register(ChartDataLabels);
+            const commonOptions = {
+                responsive: true, maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom', labels: { color: '#cbd5e1', font: { family: 'Kanit' } } },
+                    datalabels: {
+                        color: '#fff',
+                        font: { family: 'Kanit', weight: 'bold', size: 12 },
+                        formatter: (value, ctx) => {
+                            let sum = ctx.chart._metasets[ctx.datasetIndex].total;
+                            let percentage = ((value * 100) / sum).toFixed(1) + "%";
+                            return value.toLocaleString() + "\n(" + percentage + ")";
+                        },
+                        textAlign: 'center'
+                    }
+                }
+            };
+
+            const labels = ['นครราชสีมา', 'บุรีรัมย์', 'สุรินทร์', 'ชัยภูมิ', 'ร้อยเอ็ด', 'สนง.ปข.3', 'ศป.นครราชสีมา'];
+            const colors = ['#ef4444', '#f97316', '#eab308', '#22c55e', '#3b82f6', '#a855f7', '#ec4899'];
+
+            const ctxOff = document.getElementById('offCanvas').getContext('2d');
+            offChart = new Chart(ctxOff, {
+                type: 'doughnut',
+                data: { labels: labels, datasets: [{ data: [1500, 800, 600, 400, 300, 200, 100], backgroundColor: colors, borderWidth: 1, borderColor: '#1e293b' }] },
+                options: commonOptions
+            });
+
+            const ctxOn = document.getElementById('onCanvas').getContext('2d');
+            onChart = new Chart(ctxOn, {
+                type: 'doughnut',
+                data: { labels: labels, datasets: [{ data: [500, 300, 200, 150, 100, 50, 20], backgroundColor: colors, borderWidth: 1, borderColor: '#1e293b' }] },
+                options: commonOptions
+            });
+        }
+    </script>
+</body>
+</html>
