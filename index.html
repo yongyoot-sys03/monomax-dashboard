@@ -217,19 +217,21 @@
                     </div>
                 </div>
 
-                <!-- เพิ่ม: กรอบภาพรวมยอดสุทธิ Offline / Online -->
+                <!-- เพิ่ม: กรอบภาพรวมยอดจำหน่าย Offline / Online -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="bg-gradient-to-br from-red-950/80 to-slate-800 border border-red-500/50 rounded-xl p-5 flex items-center justify-between shadow-lg shadow-red-900/20">
                         <div>
-                            <h4 class="text-red-400 font-bold text-sm mb-1">ยอดจำหน่าย OFFLINE สุทธิ</h4>
-                            <p class="text-white text-3xl font-bold font-mono">1,250,000 <span class="text-lg">฿</span></p>
+                            <h4 class="text-red-400 font-bold text-sm mb-2">ภาพรวมยอดจำหน่าย OFFLINE</h4>
+                            <p class="text-slate-300 text-sm mb-1">จำนวน: <span id="offTotalQtyUI" class="font-mono text-white font-bold text-lg">...</span> ฉบับ</p>
+                            <p class="text-white text-3xl font-bold font-mono"><span id="offTotalAmtUI">...</span> <span class="text-lg text-slate-300">฿</span></p>
                         </div>
                         <div class="text-red-500 opacity-50"><svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg></div>
                     </div>
                     <div class="bg-gradient-to-br from-yellow-950/80 to-slate-800 border border-yellow-500/50 rounded-xl p-5 flex items-center justify-between shadow-lg shadow-yellow-900/20">
                         <div>
-                            <h4 class="text-yellow-400 font-bold text-sm mb-1">ยอดจำหน่าย ONLINE สุทธิ</h4>
-                            <p class="text-white text-3xl font-bold font-mono">875,000 <span class="text-lg">฿</span></p>
+                            <h4 class="text-yellow-400 font-bold text-sm mb-2">ภาพรวมยอดจำหน่าย ONLINE</h4>
+                            <p class="text-slate-300 text-sm mb-1">จำนวน: <span id="onTotalQtyUI" class="font-mono text-white font-bold text-lg">...</span> ฉบับ</p>
+                            <p class="text-white text-3xl font-bold font-mono"><span id="onTotalAmtUI">...</span> <span class="text-lg text-slate-300">฿</span></p>
                         </div>
                         <div class="text-yellow-500 opacity-50"><svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg></div>
                     </div>
@@ -355,7 +357,12 @@
                 document.getElementById('onActualAmtUI').innerText = formatNumber(prog.online.actualAmt);
                 document.getElementById('onPercentUI').innerText = `${onPct}%`;
                 document.getElementById('onBarUI').style.width = `${Math.max(onPct, 0.5)}%`;
-
+                // อัปเดตข้อมูลใส่กล่อง "ภาพรวมยอดจำหน่าย" ด้านล่าง
+                document.getElementById('offTotalQtyUI').innerText = formatInt(prog.offline.actualQty);
+                document.getElementById('offTotalAmtUI').innerText = formatNumber(prog.offline.actualAmt);
+                document.getElementById('onTotalQtyUI').innerText = formatInt(prog.online.actualQty);
+                document.getElementById('onTotalAmtUI').innerText = formatNumber(prog.online.actualAmt);
+                
             } catch (error) {
                 provSelect.innerHTML = '<option value="" disabled selected>โหลดข้อมูลล้มเหลว</option>';
                 document.getElementById('offTargetUI').innerText = 'ไม่สามารถดึงข้อมูลได้';
