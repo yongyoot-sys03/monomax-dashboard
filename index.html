@@ -244,12 +244,8 @@
                         <h4 class="text-lg font-bold text-red-400 mb-4 flex justify-between border-b border-red-900/50 pb-2">
                             <span>🏆 TOP 5 OFFLINE</span>
                         </h4>
-                        <ul class="space-y-3 font-mono text-sm">
-                            <li class="flex justify-between items-center bg-red-950/40 p-2 rounded border border-red-900/30"><span class="text-white font-semibold">1. 30000 นครราชสีมา</span> <span class="text-red-400 font-bold">150,000 ฿</span></li>
-                            <li class="flex justify-between items-center p-2"><span class="text-slate-300">2. 31000 บุรีรัมย์</span> <span class="text-slate-300">85,000 ฿</span></li>
-                            <li class="flex justify-between items-center p-2"><span class="text-slate-300">3. 32000 สุรินทร์</span> <span class="text-slate-300">62,000 ฿</span></li>
-                            <li class="flex justify-between items-center p-2"><span class="text-slate-300">4. 36000 ชัยภูมิ</span> <span class="text-slate-300">45,000 ฿</span></li>
-                            <li class="flex justify-between items-center p-2"><span class="text-slate-300">5. 45000 ร้อยเอ็ด</span> <span class="text-slate-300">38,000 ฿</span></li>
+                        <ul id="top5OfflineUI" class="space-y-3 font-mono text-sm">
+                            <li class="text-center text-slate-400 py-4">กำลังดึงข้อมูล...</li>
                         </ul>
                     </div>
 
@@ -258,16 +254,11 @@
                         <h4 class="text-lg font-bold text-yellow-400 mb-4 flex justify-between border-b border-yellow-900/50 pb-2">
                             <span>🏆 TOP 5 ONLINE</span>
                         </h4>
-                        <ul class="space-y-3 font-mono text-sm">
-                            <li class="flex justify-between items-center bg-yellow-950/40 p-2 rounded border border-yellow-900/30"><span class="text-white font-semibold">1. 30130 ปากช่อง</span> <span class="text-yellow-400 font-bold">95,000 ฿</span></li>
-                            <li class="flex justify-between items-center p-2"><span class="text-slate-300">2. 30000 นครราชสีมา</span> <span class="text-slate-300">55,000 ฿</span></li>
-                            <li class="flex justify-between items-center p-2"><span class="text-slate-300">3. 31110 นางรอง</span> <span class="text-slate-300">42,000 ฿</span></li>
-                            <li class="flex justify-between items-center p-2"><span class="text-slate-300">4. 45110 โพนทอง</span> <span class="text-slate-300">30,000 ฿</span></li>
-                            <li class="flex justify-between items-center p-2"><span class="text-slate-300">5. 32140 ปราสาท</span> <span class="text-slate-300">25,000 ฿</span></li>
+                        <ul id="top5OnlineUI" class="space-y-3 font-mono text-sm">
+                            <li class="text-center text-slate-400 py-4">กำลังดึงข้อมูล...</li>
                         </ul>
                     </div>
                 </div>
-
             </div>
         </div>
     </main>
@@ -362,11 +353,39 @@
                 document.getElementById('offTotalAmtUI').innerText = formatNumber(prog.offline.actualAmt);
                 document.getElementById('onTotalQtyUI').innerText = formatInt(prog.online.actualQty);
                 document.getElementById('onTotalAmtUI').innerText = formatNumber(prog.online.actualAmt);
+                // --- อัปเดตตารางจัดอันดับ TOP 5 ---
+                const top5 = resultData.top5;
                 
+                // ฟังก์ชันวาดตารางแบบไดนามิก
+                const generateTop5HTML = (list, isOffline) => {
+                    if (!list || list.length === 0) return '<li class="text-center text-slate-400 py-4">ยังไม่มีข้อมูลจำหน่าย</li>';
+                    
+                    let html = '';
+                    list.forEach((item, index) => {
+                        // อันดับ 1 ให้ไฮไลต์สีพื้นหลังและตัวหนา
+                        const bgClass = index === 0 ? (isOffline ? 'bg-red-950/40 border-red-900/30' : 'bg-yellow-950/40 border-yellow-900/30') : 'border-transparent';
+                        const textClass = index === 0 ? 'text-white font-semibold' : 'text-slate-300';
+                        const valClass = isOffline ? 'text-red-400' : 'text-yellow-400';
+                        
+                        html += `
+                        <li class="flex justify-between items-center p-2 rounded border ${bgClass}">
+                            <span class="${textClass} truncate pr-2">${index + 1}. ${item.name}</span>
+                            <div class="text-right shrink-0">
+                                <span class="text-slate-400 text-xs mr-3">${formatInt(item.qty)} ฉบับ</span>
+                                <span class="${index === 0 ? valClass + ' font-bold' : 'text-slate-300'}">${formatNumber(item.amt)} ฿</span>
+                            </div>
+                        </li>`;
+                    });
+                    return html;
+                };
+
+                // ส่งโครงสร้าง HTML ยัดเข้าไปใน UI
+                document.getElementById('top5OfflineUI').innerHTML = generateTop5HTML(top5.offline, true);
+                document.getElementById('top5OnlineUI').innerHTML = generateTop5HTML(top5.online, false);
             } catch (error) {
                 provSelect.innerHTML = '<option value="" disabled selected>โหลดข้อมูลล้มเหลว</option>';
-                document.getElementById('offTargetUI').innerText = 'ไม่สามารถดึงข้อมูลได้';
-                document.getElementById('onTargetUI').innerText = 'ไม่สามารถดึงข้อมูลได้';
+                document.getElementById('offTargetQtyUI').innerText = '-';
+                document.getElementById('onTargetQtyUI').innerText = '-';
             }
         });
 
