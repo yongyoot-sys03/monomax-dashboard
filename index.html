@@ -508,24 +508,24 @@
                     <!-- เพิ่มตารางรายละเอียดทั้ง 7 หน่วยงาน -->
                     <div class="bg-slate-800 rounded-xl border border-slate-700 overflow-hidden shadow-lg mt-6">
                         <div class="bg-slate-700/50 p-4 border-b border-slate-600">
-                            <h4 class="text-lg font-bold text-white">📑 รายละเอียดจำหน่ายรายหน่วยงาน (เรียงตามยอดรวมสุทธิ)</h4>
+                            <h4 class="text-xl font-bold text-white">📑 รายละเอียดจำหน่ายรายหน่วยงาน (เรียงตามยอดรวมสุทธิ)</h4>
                         </div>
                         <div class="overflow-x-auto">
-                            <table class="w-full text-sm text-left text-slate-300 font-mono">
-                                <thead class="text-xs text-slate-400 bg-slate-900/50 border-b border-slate-700 whitespace-nowrap">
+                            <table class="w-full text-base text-left text-slate-300 font-mono">
+                                <thead class="text-sm text-slate-400 bg-slate-900/50 border-b border-slate-700 whitespace-nowrap">
                                     <tr>
-                                        <th class="px-4 py-3 text-center w-16">อันดับ</th>
-                                        <th class="px-4 py-3">กลุ่มหน่วยงาน</th>
-                                        <th class="px-4 py-3 text-right text-red-400">OFFLINE (ฉบับ)</th>
-                                        <th class="px-4 py-3 text-right text-red-400">OFFLINE (บาท)</th>
-                                        <th class="px-4 py-3 text-right text-yellow-400">ONLINE (ฉบับ)</th>
-                                        <th class="px-4 py-3 text-right text-yellow-400">ONLINE (บาท)</th>
-                                        <th class="px-4 py-3 text-right text-white">ยอดรวมสุทธิ (บาท)</th>
-                                        <th class="px-4 py-3 text-right text-blue-400">สัดส่วน (%)</th>
+                                        <th class="px-4 py-2 text-center w-16">อันดับ</th>
+                                        <th class="px-4 py-2">กลุ่มหน่วยงาน</th>
+                                        <th class="px-4 py-2 text-right text-red-400">OFFLINE (ฉบับ)</th>
+                                        <th class="px-4 py-2 text-right text-red-400">OFFLINE (บาท)</th>
+                                        <th class="px-4 py-2 text-right text-yellow-400">ONLINE (ฉบับ)</th>
+                                        <th class="px-4 py-2 text-right text-yellow-400">ONLINE (บาท)</th>
+                                        <th class="px-4 py-2 text-right text-white">ยอดรวมสุทธิ (บาท)</th>
+                                        <th class="px-4 py-2 text-right text-blue-400">สัดส่วน (%)</th>
                                     </tr>
                                 </thead>
                                 <tbody id="groupTableBody">
-                                    <tr><td colspan="8" class="text-center py-4">กำลังโหลดข้อมูล...</td></tr>
+                                    <tr><td colspan="8" class="text-center py-4 text-lg">กำลังโหลดข้อมูล...</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -578,38 +578,39 @@
             // เรียงลำดับตารางจากมากไปน้อย
             tableData.sort((a, b) => b.totalAmt - a.totalAmt);
 
-            // วาดตาราง
+            // วาดตาราง (ขยายฟอนต์และกระชับช่องไฟ)
             let tbodyHtml = '';
             tableData.forEach((row, idx) => {
                 let pct = totalAllAmt > 0 ? ((row.totalAmt / totalAllAmt) * 100).toFixed(1) : 0;
                 tbodyHtml += `
-                    <tr class="border-b border-slate-700/50 hover:bg-slate-700/30 transition-colors">
-                        <td class="px-4 py-3 text-center font-bold text-white">${idx + 1}</td>
-                        <td class="px-4 py-3 font-semibold text-white">${row.name}</td>
-                        <td class="px-4 py-3 text-right text-slate-300">${formatInt(row.offQty)}</td>
-                        <td class="px-4 py-3 text-right text-red-400 font-medium">${formatNumber(row.offAmt)}</td>
-                        <td class="px-4 py-3 text-right text-slate-300">${formatInt(row.onQty)}</td>
-                        <td class="px-4 py-3 text-right text-yellow-400 font-medium">${formatNumber(row.onAmt)}</td>
-                        <td class="px-4 py-3 text-right text-white font-bold bg-slate-900/30">${formatNumber(row.totalAmt)}</td>
-                        <td class="px-4 py-3 text-right text-blue-400 font-bold">${pct}%</td>
+                    <tr class="border-b border-slate-700/50 hover:bg-slate-700/30 transition-colors text-lg">
+                        <td class="px-4 py-2 text-center font-bold text-white">${idx + 1}</td>
+                        <td class="px-4 py-2 font-bold text-white text-xl">${row.name}</td>
+                        <td class="px-4 py-2 text-right text-slate-300">${formatInt(row.offQty)}</td>
+                        <td class="px-4 py-2 text-right text-red-400 font-semibold">${formatNumber(row.offAmt)}</td>
+                        <td class="px-4 py-2 text-right text-slate-300">${formatInt(row.onQty)}</td>
+                        <td class="px-4 py-2 text-right text-yellow-400 font-semibold">${formatNumber(row.onAmt)}</td>
+                        <td class="px-4 py-2 text-right text-white font-bold bg-slate-900/30 text-xl">${formatNumber(row.totalAmt)}</td>
+                        <td class="px-4 py-2 text-right text-blue-400 font-bold">${pct}%</td>
                     </tr>
                 `;
             });
+            });
             document.getElementById('groupTableBody').innerHTML = tbodyHtml;
 
-            // ตั้งค่ากราฟและขนาดตัวอักษร
+            // เตรียมข้อมูลวาดกราฟ
             Chart.register(ChartDataLabels);
             const commonOptions = {
                 responsive: true, maintainAspectRatio: false,
-                layout: { padding: 20 }, // เพิ่มระยะขอบไม่ให้ตัวหนังสือโดนตัด
+                layout: { padding: 20 },
                 plugins: {
                     legend: { 
                         position: 'bottom', 
-                        labels: { color: '#cbd5e1', font: { family: 'Kanit', size: 15 }, padding: 25 } // ขยายตัวอักษรด้านล่างกราฟ
+                        labels: { color: '#cbd5e1', font: { family: 'Kanit', size: 18 }, padding: 20 } // ขยายชื่อ ปจ. ด้านล่างเป็น 18px
                     },
                     datalabels: {
                         color: '#fff', 
-                        font: { family: 'Kanit', weight: 'bold', size: 14 }, // ขยายตัวเลขในกราฟ
+                        font: { family: 'Kanit', weight: 'bold', size: 16, lineHeight: 1.2 }, // ขยายตัวเลขเป็น 16px และบีบช่องไฟบรรทัดด้วย lineHeight
                         formatter: (value, ctx) => {
                             if(value === 0) return null; 
                             let sum = ctx.chart._metasets[ctx.datasetIndex].total;
