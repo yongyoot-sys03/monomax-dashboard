@@ -148,32 +148,53 @@
             <!-- RIGHT: DASHBOARD SECTION -->
             <div id="dashboard" class="lg:col-span-8 flex flex-col space-y-6">
                 
-                <!-- OVERALL PROGRESS BAR -->
-                <div class="bg-slate-800 rounded-xl p-6 border border-slate-700 shadow-xl relative overflow-hidden">
-                    <div class="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 rounded-full bg-gradient-to-br from-green-500/20 to-blue-500/20 blur-2xl"></div>
-                    <div class="relative z-10">
-                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-3">
-                            <div>
-                                <h3 class="text-xl font-bold text-white flex items-center">
-                                    <span class="mr-2">🎯</span> ความคืบหน้าเป้าหมายรวม ปข.3
+                <!-- OVERALL PROGRESS BAR (เชื่อมต่อข้อมูลอัตโนมัติจาก Sheet) -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    
+                    <!-- ความคืบหน้า OFFLINE -->
+                    <div class="bg-gradient-to-br from-red-950/40 to-slate-800 rounded-xl p-5 border border-red-900/50 shadow-xl relative overflow-hidden">
+                        <div class="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 rounded-full bg-red-500/10 blur-2xl"></div>
+                        <div class="relative z-10">
+                            <div class="flex flex-col justify-between items-start mb-2 border-b border-red-900/30 pb-2">
+                                <h3 class="text-lg font-bold text-white flex items-center">
+                                    <span class="mr-2 text-red-500">🔴</span> เป้าหมาย OFFLINE
                                 </h3>
-                                <p class="text-slate-400 text-sm mt-1">
-                                    ยอดจัดสรรรวม: <span class="font-mono text-white">5,000,000</span> บาท
-                                </p>
+                                <p class="text-slate-400 text-sm mt-1">ยอดจัดสรร: <span id="offTargetUI" class="font-mono text-white">กำลังโหลด...</span> บาท</p>
                             </div>
-                            <div class="text-right mt-2 sm:mt-0">
-                                <div class="text-3xl font-bold font-mono text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-400">
-                                    42.5%
+                            <div class="flex justify-between items-end mb-2 mt-3">
+                                <span id="offActualUI" class="text-red-400 text-sm font-mono font-medium">จำหน่ายได้: ...</span>
+                                <span id="offPercentUI" class="text-2xl font-bold font-mono text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-pink-500">0%</span>
+                            </div>
+                            <div class="w-full bg-slate-900 rounded-full h-3 border border-slate-700 overflow-hidden shadow-inner">
+                                <div id="offBarUI" class="bg-gradient-to-r from-red-600 to-red-400 h-3 rounded-full relative transition-all duration-1000" style="width: 0%">
+                                    <div class="absolute inset-0 bg-white/20 animate-pulse"></div>
                                 </div>
-                                <p class="text-green-400 text-sm font-mono font-medium">ยอดปัจจุบัน: 2,125,000 ฿</p>
-                            </div>
-                        </div>
-                        <div class="w-full bg-slate-900 rounded-full h-4 mt-2 border border-slate-700 overflow-hidden shadow-inner">
-                            <div class="bg-gradient-to-r from-red-500 via-yellow-500 to-green-500 h-4 rounded-full relative" style="width: 42.5%">
-                                <div class="absolute inset-0 bg-white/20 animate-pulse"></div>
                             </div>
                         </div>
                     </div>
+
+                    <!-- ความคืบหน้า ONLINE -->
+                    <div class="bg-gradient-to-br from-yellow-950/40 to-slate-800 rounded-xl p-5 border border-yellow-900/50 shadow-xl relative overflow-hidden">
+                        <div class="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 rounded-full bg-yellow-500/10 blur-2xl"></div>
+                        <div class="relative z-10">
+                            <div class="flex flex-col justify-between items-start mb-2 border-b border-yellow-900/30 pb-2">
+                                <h3 class="text-lg font-bold text-white flex items-center">
+                                    <span class="mr-2 text-yellow-500">🟡</span> เป้าหมาย ONLINE
+                                </h3>
+                                <p class="text-slate-400 text-sm mt-1">ยอดจัดสรร: <span id="onTargetUI" class="font-mono text-white">กำลังโหลด...</span> บาท</p>
+                            </div>
+                            <div class="flex justify-between items-end mb-2 mt-3">
+                                <span id="onActualUI" class="text-yellow-400 text-sm font-mono font-medium">จำหน่ายได้: ...</span>
+                                <span id="onPercentUI" class="text-2xl font-bold font-mono text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-200">0%</span>
+                            </div>
+                            <div class="w-full bg-slate-900 rounded-full h-3 border border-slate-700 overflow-hidden shadow-inner">
+                                <div id="onBarUI" class="bg-gradient-to-r from-yellow-600 to-yellow-400 h-3 rounded-full relative transition-all duration-1000" style="width: 0%">
+                                    <div class="absolute inset-0 bg-white/20 animate-pulse"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
 
                 <!-- 8 Dashboard Buttons -->
@@ -285,26 +306,53 @@
         let branchData = {}; 
 
         // 2. ดึงข้อมูลทันทีเมื่อโหลดหน้าเว็บเสร็จ
+        // 1. สร้างตัวแปรว่างเปล่ารอรับข้อมูลจาก Sheet
+        let branchData = {}; 
+
+        // 2. ดึงข้อมูลทันทีเมื่อโหลดหน้าเว็บเสร็จ
         document.addEventListener("DOMContentLoaded", async () => {
-            // 🔴 นำ URL เว็บแอป ของคุณมาใส่ตรงนี้ 
-            const scriptURL = 'https://script.google.com/macros/s/AKfycbwQN4nR7W9OeUcM6liWEIYpCpPGDpxXCZ30ealDHmKs3Dpa6Jx11_4LspnLDD57iuF2/exec'; 
+            // 🔴 ใส่ URL WEB APP ของคุณตรงนี้
+            const scriptURL = 'AKfycbwQN4nR7W9OeUcM6liWEIYpCpPGDpxXCZ30ealDHmKs3Dpa6Jx11_4LspnLDD57iuF2'; 
             
             const provSelect = document.getElementById('provinceSelect');
             provSelect.innerHTML = '<option value="" disabled selected>กำลังโหลดข้อมูล...</option>';
             provSelect.disabled = true;
 
             try {
-                const response = await fetch(scriptURL);
-                branchData = await response.json();
+                const response = await fetch(scriptURL, { method: 'GET', redirect: 'follow' });
+                const resultData = await response.json();
                 
+                // --- ส่วนที่ 1: อัปเดตรายชื่อสาขา ---
+                branchData = resultData.branches; 
                 provSelect.innerHTML = '<option value="" disabled selected>-- เลือกกลุ่มหน่วยงาน --</option>';
                 Object.keys(branchData).forEach(prov => {
                     provSelect.add(new Option(prov, prov));
                 });
                 provSelect.disabled = false;
-                
+
+                // --- ส่วนที่ 2: อัปเดตกล่องเป้าหมายรวม OFFLINE / ONLINE ---
+                const prog = resultData.progress;
+                const formatNumber = (num) => Number(num).toLocaleString('th-TH', {minimumFractionDigits: 0, maximumFractionDigits: 2});
+                const calcPercent = (actual, target) => target > 0 ? ((actual / target) * 100).toFixed(2) : 0;
+
+                // อัปเดต UI ฝั่ง OFFLINE
+                const offPct = calcPercent(prog.offline.actual, prog.offline.target);
+                document.getElementById('offTargetUI').innerText = formatNumber(prog.offline.target);
+                document.getElementById('offActualUI').innerText = `จำหน่ายได้: ${formatNumber(prog.offline.actual)} ฿`;
+                document.getElementById('offPercentUI').innerText = `${offPct}%`;
+                document.getElementById('offBarUI').style.width = `${Math.max(offPct, 0.5)}%`; // ป้องกันแถบสีหายถ้าเป็น 0%
+
+                // อัปเดต UI ฝั่ง ONLINE
+                const onPct = calcPercent(prog.online.actual, prog.online.target);
+                document.getElementById('onTargetUI').innerText = formatNumber(prog.online.target);
+                document.getElementById('onActualUI').innerText = `จำหน่ายได้: ${formatNumber(prog.online.actual)} ฿`;
+                document.getElementById('onPercentUI').innerText = `${onPct}%`;
+                document.getElementById('onBarUI').style.width = `${Math.max(onPct, 0.5)}%`;
+
             } catch (error) {
                 provSelect.innerHTML = '<option value="" disabled selected>โหลดข้อมูลล้มเหลว</option>';
+                document.getElementById('offTargetUI').innerText = 'ไม่สามารถดึงข้อมูลได้';
+                document.getElementById('onTargetUI').innerText = 'ไม่สามารถดึงข้อมูลได้';
             }
         });
 
