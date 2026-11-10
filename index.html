@@ -341,7 +341,7 @@
             btn.classList.add('opacity-75', 'cursor-not-allowed');
 
             try {
-                // เตรียมไฟล์รูปภาพ
+                // 1. เตรียมไฟล์รูปภาพ
                 const fileInput = document.getElementById('slipUpload');
                 let fileData = null, fileName = null, mimeType = null;
                 
@@ -356,7 +356,7 @@
                     });
                 }
 
-                // รวบรวมข้อมูลทั้งหมด
+                // 2. รวบรวมข้อมูลทั้งหมด
                 const payload = {
                     channel: document.querySelector('input[name="channel"]:checked').value === 'offline' ? 'Offline' : 'Online',
                     province: document.getElementById('provinceSelect').value,
@@ -370,11 +370,12 @@
                     mimeType: mimeType
                 };
 
-                // ส่งไปที่ Google Apps Script
+                // 3. ส่งข้อมูล (ปรับแต่งให้รองรับ Google Apps Script)
                 const response = await fetch(scriptURL, {
                     method: 'POST',
+                    redirect: 'follow', // สำคัญมาก: อนุญาตให้ Google เปลี่ยนเส้นทาง URL ได้
                     headers: {
-                        'Content-Type': 'text/plain;charset=utf-8',
+                        'Content-Type': 'text/plain;charset=utf-8', // เลี่ยงการตรวจจับ CORS ของ Browser
                     },
                     body: JSON.stringify(payload)
                 });
@@ -388,11 +389,11 @@
                     updateTheme();
                     document.getElementById('uploadText').innerHTML = '<span class="font-semibold text-white">คลิกเพื่ออัปโหลด</span>';
                 } else {
-                    alert('เกิดข้อผิดพลาด: ' + result.message);
+                    alert('เกิดข้อผิดพลาดจากเซิร์ฟเวอร์: ' + result.message);
                 }
             } catch (error) {
                 alert('ไม่สามารถเชื่อมต่อระบบได้ กรุณาลองใหม่อีกครั้ง');
-                console.error(error);
+                console.error("รายละเอียด Error:", error);
             }
             
             btn.innerText = originalText;
