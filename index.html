@@ -412,19 +412,32 @@
                         type: 'bar',
                         data: { labels: chartLabels, datasets: [{ data: chartValues, backgroundColor: bgColors, borderRadius: 4 }] },
                         options: {
-                            responsive: true, maintainAspectRatio: false,
+                            responsive: true, 
+                            maintainAspectRatio: false,
+                            devicePixelRatio: Math.max(window.devicePixelRatio || 1, 2), // 💡 บังคับเรนเดอร์กราฟแบบความละเอียดสูง 2 เท่า (แก้เบลอ)
                             plugins: {
                                 legend: { display: false },
                                 datalabels: {
-                                    color: '#fff', anchor: 'end', align: 'top', font: { family: 'Kanit', size: 10, weight: 'bold' },
+                                    color: '#ffffff', // สีขาวสว่าง
+                                    anchor: 'end', 
+                                    align: 'top', 
+                                    font: { family: 'Kanit', size: 14, weight: 'bold' }, // 💡 ขยายขนาดตัวเลขบนกราฟเป็น 14
                                     formatter: (val) => formatInt(val)
                                 }
                             },
                             scales: {
-                                y: { display: false, beginAtZero: true },
-                                x: { ticks: { color: '#94a3b8', font: { family: 'Kanit', size: 10 }, maxRotation: 45, minRotation: 45 }, grid: { display: false } }
+                                y: { display: false, beginAtZero: true, grace: '15%' }, // 💡 เพิ่มพื้นที่ด้านบน กราฟจะได้ไม่ชนขอบ
+                                x: { 
+                                    ticks: { 
+                                        color: '#cbd5e1', // ให้ชื่อ ปข. สว่างขึ้น
+                                        font: { family: 'Kanit', size: 12, weight: '500' }, // 💡 ขยายฟอนต์แกน X
+                                        maxRotation: 45, 
+                                        minRotation: 45 
+                                    }, 
+                                    grid: { display: false } 
+                                }
                             },
-                            layout: { padding: { top: 20 } }
+                            layout: { padding: { top: 10 } }
                         }
                     });
                 }
