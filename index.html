@@ -598,6 +598,7 @@
                 setTimeout(renderChartsAndTable, 100);
             } else {
                 // 👇 โค้ดสร้างการ์ดข้อมูลของแต่ละสาขา
+                branchStats.sort((a, b) => a.name.localeCompare(b.name, 'th'));
                 
                 // คำนวณยอดรวมของ ปจ. นั้น
                 let provinceTotalAmt = 0;
