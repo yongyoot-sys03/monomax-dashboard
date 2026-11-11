@@ -153,33 +153,47 @@
             <!-- RIGHT: DASHBOARD SECTION -->
             <div id="dashboard" class="lg:col-span-8 flex flex-col space-y-6">
                 
-                <!-- OVERALL PROGRESS BAR (โชว์ทั้งฉบับและเงิน) -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- OVERALL PROGRESS BAR (โชว์อันดับ ปข.3) -->
+                <div class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl p-6 border border-slate-700 shadow-xl relative overflow-hidden">
+                    <div class="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 rounded-full bg-blue-500/10 blur-2xl"></div>
                     
-                    <!-- ความคืบหน้า OFFLINE -->
-                    <div class="bg-gradient-to-br from-red-950/40 to-slate-800 rounded-xl p-5 border border-red-900/50 shadow-xl relative overflow-hidden">
-                        <div class="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 rounded-full bg-red-500/10 blur-2xl"></div>
-                        <div class="relative z-10">
-                            <div class="flex flex-col justify-between items-start mb-2 border-b border-red-900/30 pb-2">
-                                <h3 class="text-lg font-bold text-white flex items-center">
-                                    <span class="mr-2 text-red-500">🔴</span> เป้าหมาย OFFLINE
-                                </h3>
-                                <p class="text-slate-400 text-sm mt-1">ยอดจัดสรร: <span id="offTargetQtyUI" class="font-mono text-white">...</span> ฉบับ / <span id="offTargetAmtUI" class="font-mono text-white">...</span> บาท</p>
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-5 border-b border-slate-700 pb-4 relative z-10 gap-2">
+                        <h3 class="text-xl md:text-2xl font-bold text-white flex items-center">
+                            <span class="mr-2 text-blue-400">📊</span> ภาพรวมผลงาน ปข.3
+                        </h3>
+                        <div class="flex items-center text-sm font-medium text-slate-300 bg-slate-800/80 px-4 py-2 rounded-full border border-slate-600 shadow-inner">
+                            <svg class="w-4 h-4 mr-2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                            <span id="currentDateUI">กำลังโหลดวันที่...</span>
+                        </div>
+                    </div>
+                    
+                    <div class="flex flex-col md:flex-row items-center justify-between gap-6 md:gap-10 relative z-10">
+                        <div class="flex flex-col items-center justify-center p-5 bg-slate-900/50 rounded-xl border border-slate-700/50 w-full md:w-1/3 shadow-inner">
+                            <span class="text-slate-400 text-sm mb-1 font-medium tracking-wide">อันดับระดับประเทศ</span>
+                            <div class="flex items-baseline my-1">
+                                <span id="rankNumberUI" class="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">...</span>
+                                <span class="text-2xl text-slate-500 ml-2">/ <span id="rankTotalUI">14</span></span>
                             </div>
-                            <div class="flex justify-between items-end mb-2 mt-3">
-                                <div class="flex flex-col">
-                                    <span class="text-slate-400 text-sm font-medium">จำหน่ายได้: <span id="offActualQtyUI" class="font-mono text-white font-bold">...</span> ฉบับ</span>
-                                    <span class="text-red-400 text-sm font-medium">เป็นเงิน: <span id="offActualAmtUI" class="font-mono text-white font-bold">...</span> ฿</span>
+                            <span class="text-xs text-slate-500 uppercase tracking-wider">สำนักงานไปรษณีย์เขต</span>
+                        </div>
+                        
+                        <div class="flex-1 w-full flex flex-col justify-center space-y-4">
+                            <div class="flex justify-between items-end">
+                                <div class="flex flex-col space-y-1">
+                                    <span class="text-slate-400 text-sm">เป้าหมายรวม: <span id="natTargetAmtUI" class="font-mono text-white font-medium text-base">...</span> บาท</span>
+                                    <span class="text-blue-400 text-sm font-bold">ยอดจำหน่ายจริง: <span id="natActualAmtUI" class="font-mono text-white text-xl">...</span> บาท</span>
                                 </div>
-                                <span id="offPercentUI" class="text-2xl font-bold font-mono text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-pink-500">0%</span>
+                                <span id="natPercentUI" class="text-4xl font-black font-mono text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300 drop-shadow-md">0%</span>
                             </div>
-                            <div class="w-full bg-slate-900 rounded-full h-3 border border-slate-700 overflow-hidden shadow-inner mt-2">
-                                <div id="offBarUI" class="bg-gradient-to-r from-red-600 to-red-400 h-3 rounded-full relative transition-all duration-1000" style="width: 0%">
+                            
+                            <div class="w-full bg-slate-950 rounded-full h-5 border border-slate-700 overflow-hidden shadow-inner p-0.5">
+                                <div id="natBarUI" class="bg-gradient-to-r from-blue-600 to-cyan-400 h-full rounded-full relative transition-all duration-1000 shadow-[0_0_10px_rgba(56,189,248,0.5)]" style="width: 0%">
                                     <div class="absolute inset-0 bg-white/20 animate-pulse"></div>
                                 </div>
                             </div>
                         </div>
                     </div>
+                </div>
 
                     <!-- ความคืบหน้า ONLINE -->
                     <div class="bg-gradient-to-br from-yellow-950/40 to-slate-800 rounded-xl p-5 border border-yellow-900/50 shadow-xl relative overflow-hidden">
@@ -378,9 +392,11 @@
         const calcPercent = (actual, target) => target > 0 ? ((actual / target) * 100).toFixed(2) : 0;
 
         document.addEventListener("DOMContentLoaded", async () => {
-            // 👇 วาง URL ใหม่ของคุณตรงนี้ (1)
+            // วันที่ปัจจุบัน (ภาษาไทย)
+            const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('currentDateUI').innerText = new Date().toLocaleDateString('th-TH', dateOptions);
+
             const scriptURL = 'https://script.google.com/macros/s/AKfycbwQN4nR7W9OeUcM6liWEIYpCpPGDpxXCZ30ealDHmKs3Dpa6Jx11_4LspnLDD57iuF2/exec'; 
-            
             const provSelect = document.getElementById('provinceSelect');
             provSelect.innerHTML = '<option value="" disabled selected>กำลังโหลดข้อมูล...</option>';
             provSelect.disabled = true;
@@ -391,35 +407,35 @@
                 
                 globalGroupData = resultData.groupTotals || { offline: {}, online: {} };
                 globalBranchData = resultData.branchTotals || {}; 
-                
                 branchData = resultData.branches; 
+
                 provSelect.innerHTML = '<option value="" disabled selected>-- เลือกกลุ่มหน่วยงาน --</option>';
-                Object.keys(branchData).forEach(prov => {
-                    provSelect.add(new Option(prov, prov));
-                });
+                Object.keys(branchData).forEach(prov => { provSelect.add(new Option(prov, prov)); });
                 provSelect.disabled = false;
 
-                const prog = resultData.progress;
-                const offPct = calcPercent(prog.offline.actualAmt, prog.offline.targetAmt);
-                document.getElementById('offTargetQtyUI').innerText = formatInt(prog.offline.targetQty);
-                document.getElementById('offTargetAmtUI').innerText = formatNumber(prog.offline.targetAmt);
-                document.getElementById('offActualQtyUI').innerText = formatInt(prog.offline.actualQty);
-                document.getElementById('offActualAmtUI').innerText = formatNumber(prog.offline.actualAmt);
-                document.getElementById('offPercentUI').innerText = `${offPct}%`;
-                document.getElementById('offBarUI').style.width = `${Math.max(offPct, 0.5)}%`; 
+                // นำข้อมูลระดับประเทศมาแสดงผล
+                const rankData = resultData.nationalRank;
+                if (rankData) {
+                    const natPct = calcPercent(rankData.actual, rankData.target);
+                    document.getElementById('rankNumberUI').innerText = rankData.rank || '-';
+                    document.getElementById('rankTotalUI').innerText = rankData.total || '14';
+                    document.getElementById('natTargetAmtUI').innerText = formatNumber(rankData.target);
+                    document.getElementById('natActualAmtUI').innerText = formatNumber(rankData.actual);
+                    document.getElementById('natPercentUI').innerText = `${natPct}%`;
+                    document.getElementById('natBarUI').style.width = `${Math.max(natPct, 2)}%`; 
+                }
 
-                const onPct = calcPercent(prog.online.actualAmt, prog.online.targetAmt);
-                document.getElementById('onTargetQtyUI').innerText = formatInt(prog.online.targetQty);
-                document.getElementById('onTargetAmtUI').innerText = formatNumber(prog.online.targetAmt);
-                document.getElementById('onActualQtyUI').innerText = formatInt(prog.online.actualQty);
-                document.getElementById('onActualAmtUI').innerText = formatNumber(prog.online.actualAmt);
-                document.getElementById('onPercentUI').innerText = `${onPct}%`;
-                document.getElementById('onBarUI').style.width = `${Math.max(onPct, 0.5)}%`;
+                // อัปเดตกล่องยอดสุทธิ (รวมออฟไลน์และออนไลน์ทั้งหมด)
+                let totalOffQty = 0, totalOffAmt = 0, totalOnQty = 0, totalOnAmt = 0;
+                Object.values(globalGroupData.offline).forEach(g => { totalOffQty += g.qty; totalOffAmt += g.amt; });
+                Object.values(globalGroupData.online).forEach(g => { totalOnQty += g.qty; totalOnAmt += g.amt; });
 
-                document.getElementById('offTotalQtyUI').innerText = formatInt(prog.offline.actualQty);
-                document.getElementById('offTotalAmtUI').innerText = formatNumber(prog.offline.actualAmt);
-                document.getElementById('onTotalQtyUI').innerText = formatInt(prog.online.actualQty);
-                document.getElementById('onTotalAmtUI').innerText = formatNumber(prog.online.actualAmt);
+                document.getElementById('offTotalQtyUI').innerText = formatInt(totalOffQty);
+                document.getElementById('offTotalAmtUI').innerText = formatNumber(totalOffAmt);
+                document.getElementById('onTotalQtyUI').innerText = formatInt(totalOnQty);
+                document.getElementById('onTotalAmtUI').innerText = formatNumber(totalOnAmt);
+
+                // ... (โค้ด TOP5 เดิม) ...
 
                 const top5 = resultData.top5;
                 const generateTop5HTML = (list, isOffline) => {
