@@ -1042,7 +1042,8 @@
             winnerEl.className = "relative z-10 text-3xl md:text-5xl lg:text-6xl font-black text-slate-300 drop-shadow-md px-4 leading-tight";
 
             let ticks = 0;
-            const maxTicks = 40; 
+            // ปรับจำนวนรอบเป็น 200 รอบ
+            const maxTicks = 200; 
             
             // ทำให้ชื่อสลับอย่างรวดเร็ว (Slot Machine Effect)
             raffleInterval = setInterval(() => {
@@ -1054,7 +1055,8 @@
                     clearInterval(raffleInterval);
                     finishRaffle();
                 }
-            }, 70); 
+            // ปรับความเร็วเป็น 25 มิลลิวินาที (เร็วสุดๆ แวบๆ)
+            }, 25); 
         }
 
         function finishRaffle() {
@@ -1104,6 +1106,29 @@
         function randomInRange(min, max) {
             return Math.random() * (max - min) + min;
         }
+
+        // ฟังก์ชันสำหรับสลับรายชื่อ (Shuffle) ให้คละกัน
+        function shuffleTextarea(prizeLevel) {
+            const textareaId = prizeLevel === 1 ? 'raffleNames1' : 'raffleNames2';
+            const textarea = document.getElementById(textareaId);
+            
+            // ดึงชื่อมาแยกเป็นบรรทัดและตัดบรรทัดว่างทิ้ง
+            let names = textarea.value.split('\n').map(n => n.trim()).filter(n => n !== '');
+            
+            if (names.length < 2) {
+                alert('ต้องมีอย่างน้อย 2 ชื่อถึงจะสลับได้ครับ');
+                return;
+            }
+
+            // สลับตำแหน่งแบบสุ่ม (Fisher-Yates Shuffle)
+            for (let i = names.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [names[i], names[j]] = [names[j], names[i]];
+            }
+
+            // นำชื่อที่คละแล้วใส่กลับลงไปในกล่องข้อความ
+            textarea.value = names.join('\n');
+        }
     </script>
 
     <!-- ============================================== -->
@@ -1115,7 +1140,6 @@
         <span class="text-2xl drop-shadow-sm">🎰</span> <span class="hidden md:inline">สุ่มจับรางวัล</span>
     </button>
 
-    <!-- หน้าต่าง Pop-up สุ่มรางวัล -->
     <!-- หน้าต่าง Pop-up สุ่มรางวัล -->
     <div id="raffleModal" class="fixed inset-0 z-[70] hidden items-center justify-center p-2 sm:p-4">
         <div class="absolute inset-0 bg-slate-950/95 backdrop-blur-xl" onclick="closeRaffleModal()"></div>
@@ -1146,9 +1170,14 @@
                                 <span class="text-2xl">🥇</span> ลุ้นรางวัลที่ 1
                             </h4>
                             <textarea id="raffleNames1" rows="6" class="w-full bg-slate-950/80 border border-slate-700 rounded-xl p-3 text-white font-mono focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 outline-none transition-all resize-none custom-scrollbar mb-4 text-sm" placeholder="วางรายชื่อผู้มีสิทธิ์ลุ้นรางวัลที่ 1 (ยอด 100 ฉบับ) ตรงนี้..."></textarea>
-                            <button onclick="startRaffle(1)" class="mt-auto w-full bg-gradient-to-r from-yellow-600 to-yellow-800 hover:from-yellow-500 hover:to-yellow-700 text-white font-bold py-3 px-4 rounded-xl shadow-md transition-all transform hover:scale-105 text-base md:text-lg border border-yellow-500/50">
-                                สุ่มรางวัลที่ 1 🎯
-                            </button>
+                            <div class="flex gap-2 mt-auto">
+                                <button onclick="shuffleTextarea(1)" class="bg-slate-700 hover:bg-slate-600 text-slate-200 font-bold py-3 px-3 md:px-4 rounded-xl shadow-md transition-all border border-slate-500/50 text-sm whitespace-nowrap">
+                                    🔀 สลับชื่อ
+                                </button>
+                                <button onclick="startRaffle(1)" class="flex-1 bg-gradient-to-r from-yellow-600 to-yellow-800 hover:from-yellow-500 hover:to-yellow-700 text-white font-bold py-3 px-4 rounded-xl shadow-md transition-all transform hover:scale-105 text-base md:text-lg border border-yellow-500/50">
+                                    สุ่มรางวัลที่ 1 🎯
+                                </button>
+                            </div>
                         </div>
                         
                         <!-- กรอบรางวัลที่ 2 -->
@@ -1157,9 +1186,14 @@
                                 <span class="text-2xl">🥈</span> ลุ้นรางวัลที่ 2
                             </h4>
                             <textarea id="raffleNames2" rows="6" class="w-full bg-slate-950/80 border border-slate-700 rounded-xl p-3 text-white font-mono focus:border-slate-400 focus:ring-1 focus:ring-slate-400 outline-none transition-all resize-none custom-scrollbar mb-4 text-sm" placeholder="วางรายชื่อผู้มีสิทธิ์ลุ้นรางวัลที่ 2 (ยอด 30 ฉบับ) ตรงนี้..."></textarea>
-                            <button onclick="startRaffle(2)" class="mt-auto w-full bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-500 hover:to-slate-600 text-white font-bold py-3 px-4 rounded-xl shadow-md transition-all transform hover:scale-105 text-base md:text-lg border border-slate-500/50">
-                                สุ่มรางวัลที่ 2 🎯
-                            </button>
+                            <div class="flex gap-2 mt-auto">
+                                <button onclick="shuffleTextarea(2)" class="bg-slate-700 hover:bg-slate-600 text-slate-200 font-bold py-3 px-3 md:px-4 rounded-xl shadow-md transition-all border border-slate-500/50 text-sm whitespace-nowrap">
+                                    🔀 สลับชื่อ
+                                </button>
+                                <button onclick="startRaffle(2)" class="flex-1 bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-500 hover:to-slate-600 text-white font-bold py-3 px-4 rounded-xl shadow-md transition-all transform hover:scale-105 text-base md:text-lg border border-slate-500/50">
+                                    สุ่มรางวัลที่ 2 🎯
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
