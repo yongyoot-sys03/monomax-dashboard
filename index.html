@@ -1184,8 +1184,12 @@
                         </div>
                         
                         <!-- กรอบรางวัลที่ 2 -->
-                        <div class="bg-slate-800/60 border border-slate-400/40 rounded-xl p-4 md:p-5 flex flex-col shadow-lg">
-                            <h4 class="text-lg md:text-xl font-bold text-slate-200 mb-1 text-center flex items-center justify-center gap-2">
+                        <div class="bg-slate-800/60 border border-slate-400/40 rounded-xl p-4 md:p-5 flex flex-col shadow-lg relative">
+                            <!-- ป้ายบอกสถานะจำนวนรางวัลที่ออกไปแล้ว -->
+                            <div class="absolute top-3 right-3 bg-slate-900 text-slate-300 text-xs px-2.5 py-1.5 rounded-lg border border-slate-500 shadow-inner font-bold">
+                                ออกแล้ว: <span id="prize2CountDisplay" class="text-yellow-400 text-sm">0</span>/10
+                            </div>
+                            <h4 class="text-lg md:text-xl font-bold text-slate-200 mb-1 text-center flex items-center justify-center gap-2 mt-4 md:mt-2">
                                 <span class="text-2xl">🥈</span> ลุ้นรางวัลที่ 2
                             </h4>
                             <p class="text-sm text-slate-400 text-center mb-3 font-medium">
