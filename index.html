@@ -1064,15 +1064,30 @@
             winnerEl.innerText = finalWinner;
             
             // เอฟเฟกต์สีทองตัวใหญ่ตอนประกาศผู้ชนะ
-            winnerEl.className = "relative z-10 text-4xl md:text-6xl lg:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-600 drop-shadow-[0_0_20px_rgba(234,179,8,0.6)] transform scale-110 transition-all duration-700 px-4 leading-tight";
+            winnerEl.className = "relative z-10 text-3xl md:text-5xl lg:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-600 drop-shadow-[0_0_20px_rgba(234,179,8,0.6)] transform scale-110 transition-all duration-700 px-4 leading-tight";
             
             document.getElementById('raffleGlow').classList.remove('bg-yellow-500/0');
             document.getElementById('raffleGlow').classList.add('bg-yellow-500/20');
             document.getElementById('raffleResetBtn').classList.remove('hidden');
 
+            // ---------------------------------------------------------
+            // 🛑 ระบบตัดชื่อผู้ชนะออกจากกองสลากอัตโนมัติ (ป้องกันได้รางวัลซ้ำ)
+            // ---------------------------------------------------------
+            // กรองรายชื่อ โดยลบชื่อที่ตรงกับ finalWinner ออกทั้งหมด (รวมถึงชื่อที่เบิ้ลสิทธิ์ไว้ด้วย)
+            const remainingNames = raffleNamesList.filter(name => name !== finalWinner);
+            
+            // อัปเดตกลับลงไปในกล่องข้อความ
+            const titleEl = document.getElementById('rafflePrizeTitle').innerText;
+            if (titleEl.includes('รางวัลที่ 1')) {
+                document.getElementById('raffleNames1').value = remainingNames.join('\n');
+            } else {
+                document.getElementById('raffleNames2').value = remainingNames.join('\n');
+            }
+            // ---------------------------------------------------------
+
             // จุดพลุกระดาษฉลอง (Confetti Effect)
             if (typeof confetti === 'function') {
-                var duration = 3000; // พลุยิง 3 วินาที
+                var duration = 3000;
                 var animationEnd = Date.now() + duration;
                 var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 100 };
 
@@ -1080,7 +1095,6 @@
                     var timeLeft = animationEnd - Date.now();
                     if (timeLeft <= 0) { return clearInterval(interval); }
                     var particleCount = 50 * (timeLeft / duration);
-                    // ยิงพลุจากด้านซ้ายและขวา
                     confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
                     confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
                 }, 250);
