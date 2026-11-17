@@ -38,6 +38,7 @@
             <nav class="flex flex-1 justify-end space-x-4 sm:space-x-6 text-xs sm:text-sm font-medium">
                 <a href="#top" class="text-slate-300 hover:text-white transition-colors">หน้าแรก</a>
                 <button onclick="openRulesModal()" class="text-slate-300 hover:text-red-400 transition-colors">กติการ่วมสนุก</button>
+                <button onclick="openPackingModal()" class="text-slate-300 hover:text-blue-400 transition-colors whitespace-nowrap border border-slate-600 px-2 py-1 rounded-md bg-slate-800/50 hover:bg-slate-700">การปิดถุง</button>
                 <a href="#dashboard" class="text-slate-300 hover:text-yellow-400 transition-colors hidden sm:block">Dashboard</a>
             </nav>
         </div>
@@ -470,6 +471,114 @@
         </div>
     </div>
 
+    <!-- 👇 PACKING MODAL (ป๊อปอัป การปิดถุง PC-OFFLINE) 👇 -->
+    <div id="packingModal" class="fixed inset-0 z-[60] hidden items-center justify-center p-4">
+        <div class="absolute inset-0 bg-slate-950/90 backdrop-blur-sm" onclick="closePackingModal()"></div>
+        <div class="relative bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-3xl shadow-2xl p-6 z-10 max-h-[90vh] flex flex-col">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-4 mb-4 shrink-0">
+                <h3 class="text-xl md:text-2xl font-bold text-white flex items-center"><span class="mr-3">📦</span> แนวทางการปิดถุง PC-OFFLINE</h3>
+                <button onclick="closePackingModal()" class="text-slate-400 hover:text-white bg-slate-800 rounded-full p-2 transition-colors"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+            </div>
+            
+            <div class="overflow-y-auto space-y-6 text-slate-300 pr-2 pb-4 custom-scrollbar flex-1">
+                
+                <!-- 1. ภาพรวมโครงการ -->
+                <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700 shadow-sm">
+                    <h4 class="font-bold text-yellow-400 mb-2 flex items-center"><span class="mr-2">🏆</span> โครงการ "เชียร์พรีเมียร์ลีกลุ้นโชค" MONOMAX</h4>
+                    <p class="text-slate-300 leading-relaxed md:pl-6 text-sm md:text-base">
+                        การจำหน่าย <span class="font-bold text-red-400">"เน้น"</span> ขายโปสต์การ์ดออนไลน์<br>
+                        <span class="text-slate-400 text-sm">(ให้พนักงาน/ลูกจ้าง ปณท โหลดแอปฯ Promt Post และสร้างรหัสผู้ขาย)</span>
+                    </p>
+                </div>
+                
+                <!-- Grid แบ่งครึ่งเนื้อหา (รับฝาก / ปิดถุง) -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- 2. การรับฝาก -->
+                    <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700 shadow-sm flex flex-col">
+                        <h4 class="font-bold text-blue-400 mb-3 flex items-center border-b border-slate-700/80 pb-2"><span class="mr-2">📥</span> 1. การรับฝาก <span class="text-[11px] md:text-xs font-normal text-slate-400 ml-auto bg-slate-900 px-2 py-1 rounded">20 ส.ค. 69 - 30 พ.ค. 70</span></h4>
+                        <ol class="list-decimal list-outside ml-5 space-y-2 text-slate-300 leading-relaxed marker:text-blue-500 marker:font-bold text-sm">
+                            <li>จ่าหน้า D/ID <span class="font-bold text-white bg-slate-900 px-1.5 py-0.5 rounded border border-slate-600">"MONOMX"</span> เชียร์ทีม....... <br><span class="text-slate-400 text-xs">เขียนชื่อที่อยู่ผู้เชียร์ + หมายเลขสมาชิก MONOMAX (จะได้รางวัลพิเศษ)</span></li>
+                            <li>ประทับตราประจำวัน</li>
+                            <li>แยกทีม... รัดยาง 4 มุม ติด ป.200 หรือกระดาษเปล่า เขียนทีม...</li>
+                        </ol>
+                        <div class="mt-auto pt-4 text-xs text-yellow-500/80 italic text-center">* การรับฝาก/ไขตู้ตามเวลาทำการปกติ</div>
+                    </div>
+                    
+                    <!-- 3. ปิดถุง -->
+                    <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700 shadow-sm flex flex-col">
+                        <h4 class="font-bold text-red-400 mb-3 flex items-center border-b border-slate-700/80 pb-2"><span class="mr-2">📦</span> 2. การปิดถุง</h4>
+                        <ol class="list-decimal list-outside ml-5 space-y-3 text-slate-300 leading-relaxed marker:text-red-500 marker:font-bold text-sm">
+                            <li>เขียนป้ายปากถุง <span class="font-bold text-white bg-slate-900 px-1.5 py-0.5 rounded border border-slate-600 inline-block my-1">MOMOMAX 11120</span> <br>ทีม..... หรือ (คละ) ลงวันที่ให้ชัดเจน
+                                <div class="text-xs text-yellow-200/80 bg-yellow-900/20 p-2 rounded border border-yellow-500/20 mt-1.5 leading-relaxed">
+                                    (ถ้ายังไม่เต็มถุง พักรอให้เต็มถุง แต่รอบวันทำการสุดท้ายของแต่ละเดือน ต้องปิดถุง)
+                                </div>
+                            </li>
+                            <li>ส่งไป ศป.ลส.</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <!-- 4. ขั้นตอน ศป.ลส. -->
+                <div class="bg-slate-800/60 p-4 md:p-5 rounded-xl border border-slate-700 shadow-sm">
+                    <h4 class="font-bold text-green-400 mb-3 flex items-center border-b border-slate-700/80 pb-2"><span class="mr-2">🏢</span> 3. ขั้นตอนการดำเนินงาน ศป.ลส.</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 pl-2">
+                        <ol class="list-decimal list-outside ml-4 space-y-2 text-slate-300 leading-relaxed marker:text-green-500 marker:font-bold text-sm">
+                            <li>ตรวจป้ายปากถุง MONOMAX 11120 แยกทีม....ตามป้ายปากถุง <span class="text-slate-400 text-xs block">หากเขียนว่า (คละ) ให้เปิดแยกเข้ากองของแต่ละทีม</span></li>
+                            <li>เปิดถุงคัดแยกไปรษณียบัตรเชียร์ทีม....เข้ากองแต่ละทีม</li>
+                            <li>จัดเก็บสถิติปริมาณงาน</li>
+                            <li>ตรวจรูปแบบไปรษณียบัตร จ่าหน้า รอยประท้บ ชื่อที่อยู่ผู้เชียร์</li>
+                        </ol>
+                        <ol class="list-decimal list-outside ml-4 space-y-2 text-slate-300 leading-relaxed marker:text-green-500 marker:font-bold text-sm" start="5">
+                            <li>รายงานสรุปสถิติปริมาณงานให้คณะคัดแยกฯ สำเนาส่ง พค.</li>
+                            <li>โปรยรวมกัน ทั้งโปสต์การ์ดออนไลน์และไปรษณียบัตรแต่ละทีม</li>
+                            <li>บรรจุภาชนะ เตรียมส่งมอบ</li>
+                            <li>ส่งมอบ MONOMAX <span class="text-yellow-400 font-medium border-b border-yellow-400/50 inline-block mt-1">ภายในวันที่ 12 ของเดือนถัดจากรอบส่งเชียร์</span></li>
+                        </ol>
+                    </div>
+                </div>
+                
+                <!-- 5. การจ่ายค่าส่งเสริมฯ -->
+                <div class="bg-slate-900/80 p-4 md:p-5 rounded-xl border border-yellow-500/30 shadow-inner">
+                    <h4 class="font-bold text-yellow-400 mb-3 flex items-center border-b border-slate-700 pb-2"><span class="mr-2">💰</span> 4. การจ่ายค่าส่งเสริมฯ ไปรษณีย์บัตร 10%</h4>
+                    <div class="space-y-4 mt-4">
+                        <div class="flex items-start bg-slate-800/50 p-3 rounded-lg border border-slate-700/50">
+                            <div class="bg-slate-700 text-slate-300 font-bold w-6 h-6 rounded-full flex items-center justify-center shrink-0 mr-3 mt-0.5 shadow-sm text-xs md:text-sm">1</div>
+                            <div class="text-sm">
+                                <p class="text-slate-200 font-medium mb-1"><span class="text-white">ปณ.</span> จัดทำรายงานสรุปผลการจำหน่ายไปรฯ พร้อมหลักฐานให้ ปน./ปข.</p>
+                                <p class="text-red-400 text-xs font-semibold flex items-center"><svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> ภายในวันที่ 5 ของเดือนถัดไปของรอบเชียร์</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start bg-slate-800/50 p-3 rounded-lg border border-slate-700/50">
+                            <div class="bg-slate-700 text-slate-300 font-bold w-6 h-6 rounded-full flex items-center justify-center shrink-0 mr-3 mt-0.5 shadow-sm text-xs md:text-sm">2</div>
+                            <div class="text-sm">
+                                <p class="text-slate-200 font-medium mb-1"><span class="text-white">ปน./ปข.</span> ตรวจสอบความถูกต้องและอนุมัติจ่ายค่าส่งเสริมฯ ให้ ปณ.</p>
+                                <p class="text-slate-400 text-[11px] md:text-xs mb-2 leading-relaxed bg-slate-900/50 p-2 rounded border border-slate-700/50">
+                                    (ใช้งบประมาณ ปน./ปข.อนุมัติจ่าย หากไม่พอให้ขอ งป.ตามผลงาน ในระยะแรก เมื่อทราบยอดใช้ อาจประมาณการขอ งป.ในเดือนที่เหลือได้)
+                                </p>
+                                <p class="text-red-400 text-xs font-semibold flex items-center"><svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> ภายในวันที่ 10 ของเดือนถัดไปของรอบเชียร์</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start bg-slate-800/50 p-3 rounded-lg border border-slate-700/50">
+                            <div class="bg-slate-700 text-slate-300 font-bold w-6 h-6 rounded-full flex items-center justify-center shrink-0 mr-3 mt-0.5 shadow-sm text-xs md:text-sm">3</div>
+                            <div class="text-sm">
+                                <p class="text-slate-200 font-medium mb-1"><span class="text-white">ปน./ปข.</span> สรุปรายงานผลการดำเนินงานรายได้/ค่าใช้จ่าย ให้ประธานกรรมการฯ ผ่าน พค.</p>
+                                <p class="text-red-400 text-xs font-semibold flex items-center mb-2"><svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> ภายในวันที่ 15 ของเดือนถัดไปของรอบเชียร์</p>
+                                <div class="bg-yellow-900/20 border border-yellow-500/20 p-2 rounded text-yellow-200/90 text-[11px] md:text-xs">
+                                    *กรณีรอบเชียร์เดือน พ.ค.70 ให้รายงานสรุปผลงานของ พ.ค.70 และภาพรวมตลอดกิจกรรม
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="pt-4 border-t border-slate-800 shrink-0 mt-2">
+                <button onclick="closePackingModal()" class="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 md:py-3.5 rounded-xl transition-all shadow-lg text-base md:text-lg">ปิดหน้าต่าง</button>
+            </div>
+        </div>
+    </div>
+    <!-- 👆 สิ้นสุด PACKING MODAL 👆 -->
+    
     <!-- DASHBOARD MODAL (กล่อง Pop-up เวลากดปุ่ม) -->
     <div id="dashModal" class="fixed inset-0 z-50 hidden items-center justify-center p-2 sm:p-4">
         <div class="absolute inset-0 bg-slate-950/90 backdrop-blur-md" onclick="closeDashModal()"></div>
@@ -483,6 +592,8 @@
             <div class="p-4 overflow-y-auto flex-1 custom-scrollbar" id="modalContent"></div>
         </div>
     </div>
+
+    
     
     <!-- SUCCESS MODAL (Pop-up บันทึกสำเร็จ) -->
     <div id="successModal" class="fixed inset-0 z-[60] hidden items-center justify-center p-4 opacity-0 transition-opacity duration-300">
