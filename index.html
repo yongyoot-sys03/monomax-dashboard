@@ -1074,7 +1074,25 @@
                 content.classList.remove('scale-95');
             }, 10);
         }
-
+        #############################################
+        function openPackingModal() { 
+            const modal = document.getElementById('packingModal');
+            if(modal) {
+                modal.classList.remove('hidden'); 
+                modal.classList.add('flex'); 
+            } else {
+                console.error("ไม่พบ element ที่มี id='packingModal'");
+            }
+        }
+        
+        function closePackingModal() { 
+            const modal = document.getElementById('packingModal');
+            if(modal) {
+                modal.classList.add('hidden'); 
+                modal.classList.remove('flex'); 
+            }
+        }
+        ###################################################
         function closeSuccessModal() {
             const modal = document.getElementById('successModal');
             const content = document.getElementById('successModalContent');
