@@ -1269,11 +1269,11 @@
             // แสดงผลกล่องรางวัลที่ 2
             const list2El = document.getElementById('winnerList2');
             if (winners2.length === 0) {
-                list2El.innerHTML = '<div class="h-full flex items-center justify-center text-slate-500 text-sm italic">รอการสุ่มจับรางวัล...</div>';
+                list2El.innerHTML = '<div class="text-center text-slate-500 text-sm italic">รอการสุ่มจับรางวัล...</div>';
             } else {
                 list2El.innerHTML = winners2.map((name, idx) => `
-                    <div class="flex items-center bg-slate-800/70 border border-slate-700 rounded-lg px-3 py-2 text-sm">
-                        <span class="w-6 h-6 rounded-full bg-slate-700 text-yellow-400 font-bold text-xs flex items-center justify-center mr-3 shrink-0">${idx + 1}</span>
+                    <div class="flex items-center bg-slate-800/70 border border-slate-700 rounded-lg px-2.5 py-1 text-xs sm:text-sm">
+                        <span class="w-5 h-5 rounded-full bg-slate-700 text-yellow-400 font-bold text-[11px] flex items-center justify-center mr-2.5 shrink-0">${idx + 1}</span>
                         <span class="text-slate-100 font-medium truncate">${name}</span>
                     </div>
                 `).join('');
@@ -1361,7 +1361,8 @@
                             <p class="text-sm text-yellow-200/80 text-center mb-3 font-medium">
                                 Gift card LOTUS 500 บาท (จำนวน 1 รางวัล)
                             </p>
-                            <div id="winnerList1" class="w-full h-56 bg-slate-950/80 border border-slate-700 rounded-xl p-4 text-white overflow-y-auto custom-scrollbar mb-4 flex flex-col justify-center">
+                            <!-- กล่องแสดงผลผู้โชคดี รางวัลที่ 1 -->
+                            <div id="winnerList1" class="w-full flex-1 min-h-[220px] bg-slate-950/80 border border-slate-700 rounded-xl p-4 text-white mb-4 flex flex-col justify-center">
                                 <div class="text-center text-slate-500 text-sm italic">รอการสุ่มจับรางวัล...</div>
                             </div>
                             <button onclick="startRaffle(1)" id="btnStartRaffle1" class="w-full mt-auto bg-gradient-to-r from-yellow-600 to-yellow-800 hover:from-yellow-500 hover:to-yellow-700 text-white font-bold py-3 px-4 rounded-xl shadow-md transition-all transform hover:scale-[1.02] text-base md:text-lg border border-yellow-500/50">
@@ -1380,8 +1381,9 @@
                             <p class="text-sm text-slate-400 text-center mb-3 font-medium">
                                 Gift card LOTUS 100 บาท (จำนวน 10 รางวัล)
                             </p>
-                            <div id="winnerList2" class="w-full h-56 bg-slate-950/80 border border-slate-700 rounded-xl p-3 text-white overflow-y-auto custom-scrollbar mb-4 space-y-2">
-                                <div class="h-full flex items-center justify-center text-slate-500 text-sm italic">รอการสุ่มจับรางวัล...</div>
+                            <!-- กล่องแสดงผลผู้โชคดี รางวัลที่ 2 -->
+                            <div id="winnerList2" class="w-full flex-1 min-h-[220px] bg-slate-950/80 border border-slate-700 rounded-xl p-2.5 text-white mb-4 space-y-1.5 flex flex-col justify-center">
+                                <div class="text-center text-slate-500 text-sm italic">รอการสุ่มจับรางวัล...</div>
                             </div>
                             <button onclick="startRaffle(2)" id="btnStartRaffle2" class="w-full mt-auto bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-500 hover:to-slate-600 text-white font-bold py-3 px-4 rounded-xl shadow-md transition-all transform hover:scale-[1.02] text-base md:text-lg border border-slate-500/50">
                                 สุ่มรางวัลที่ 2 🎯
